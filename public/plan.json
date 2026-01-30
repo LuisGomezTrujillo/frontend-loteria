@@ -1,0 +1,314 @@
+[
+  {
+    "id": 1,
+    "titulo": "SECO 50",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 2,
+    "titulo": "SECO 49",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 3,
+    "titulo": "SECO 48",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 4,
+    "titulo": "SECO 47",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 5,
+    "titulo": "SECO 46",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 6,
+    "titulo": "SECO 45",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 7,
+    "titulo": "SECO 44",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 8,
+    "titulo": "SECO 43",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 9,
+    "titulo": "SECO 42",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 10,
+    "titulo": "SECO 41",
+    "valor": "40 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 11,
+    "titulo": "SECO 40",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 12,
+    "titulo": "SECO 39",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 13,
+    "titulo": "SECO 38",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 14,
+    "titulo": "SECO 37",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 15,
+    "titulo": "SECO 36",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 16,
+    "titulo": "SECO 35",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 17,
+    "titulo": "SECO 34",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 18,
+    "titulo": "SECO 33",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 19,
+    "titulo": "SECO 32",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 20,
+    "titulo": "SECO 31",
+    "valor": "50 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 21,
+    "titulo": "SECO 30",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 22,
+    "titulo": "SECO 29",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 23,
+    "titulo": "SECO 28",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 24,
+    "titulo": "SECO 27",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 25,
+    "titulo": "SECO 26",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 26,
+    "titulo": "SECO 25",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 27,
+    "titulo": "SECO 24",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 28,
+    "titulo": "SECO 23",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 29,
+    "titulo": "SECO 22",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 30,
+    "titulo": "SECO 21",
+    "valor": "60 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 31,
+    "titulo": "SECO 20",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 32,
+    "titulo": "SECO 19",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 33,
+    "titulo": "SECO 18",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 34,
+    "titulo": "SECO 17",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 35,
+    "titulo": "SECO 16",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 36,
+    "titulo": "SECO 15",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 37,
+    "titulo": "SECO 14",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 38,
+    "titulo": "SECO 13",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 39,
+    "titulo": "SECO 12",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 40,
+    "titulo": "SECO 11",
+    "valor": "80 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 41,
+    "titulo": "SECO 10",
+    "valor": "100 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 42,
+    "titulo": "SECO 9",
+    "valor": "100 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 43,
+    "titulo": "SECO 8",
+    "valor": "100 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 44,
+    "titulo": "SECO 7",
+    "valor": "100 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 45,
+    "titulo": "SECO 6",
+    "valor": "100 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 46,
+    "titulo": "SECO 5",
+    "valor": "200 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 47,
+    "titulo": "SECO 4",
+    "valor": "200 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 48,
+    "titulo": "SECO 3",
+    "valor": "200 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 49,
+    "titulo": "SECO 2",
+    "valor": "300 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 50,
+    "titulo": "SECO 1",
+    "valor": "300 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 51,
+    "titulo": "MAYOR",
+    "valor": "2.600 MILLONES",
+    "inputs": 6
+  },
+  {
+    "id": 52,
+    "titulo": "GANA SIEMPRE",
+    "valor": "1,5 MILLONES",
+    "inputs": 4
+  }
+]
