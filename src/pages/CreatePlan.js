@@ -7,13 +7,13 @@ const CreatePlan = () => {
   const [nombre, setNombre] = useState('');
   const [premios, setPremios] = useState([]);
   
-  // Estado temporal para el nuevo premio a agregar
+  // Estado inicial
   const [newPremio, setNewPremio] = useState({ titulo: '', valor: '', cantidad_balotas: 4 });
 
   const addPremio = () => {
     if (!newPremio.titulo || !newPremio.valor) return alert("Complete los datos del premio");
     setPremios([...premios, { ...newPremio }]);
-    setNewPremio({ titulo: '', valor: '', cantidad_balotas: 4 }); // Reset
+    setNewPremio({ titulo: '', valor: '', cantidad_balotas: 6 }); 
   };
 
   const removePremio = (index) => {
@@ -23,14 +23,27 @@ const CreatePlan = () => {
   const handleSubmit = async () => {
     if (!nombre || premios.length === 0) return alert("Debe asignar un nombre y al menos un premio");
 
+    // Preparamos el payload
+    const payload = { 
+      nombre: nombre, 
+      premios: premios.map(p => ({
+        titulo: p.titulo,
+        valor: p.valor, // <--- CAMBIO: Se envía tal cual (String), sin parseFloat
+        cantidad_balotas: parseInt(p.cantidad_balotas) // Esto sí debe ser número entero
+      })) 
+    };
+
     try {
-      const payload = { nombre, premios };
       await axios.post('http://localhost:8000/planes/', payload);
       alert('Plan creado exitosamente');
-      navigate('/admin/sorteo'); // Ir a crear sorteo
+      navigate('/admin/sorteo'); 
     } catch (error) {
       console.error(error);
-      alert('Error al crear el plan');
+      if (error.response && error.response.data) {
+         alert(`Error: ${JSON.stringify(error.response.data)}`);
+      } else {
+         alert('Error al crear el plan');
+      }
     }
   };
 
@@ -39,7 +52,7 @@ const CreatePlan = () => {
       <h1 className="admin-title">Crear Nuevo Plan de Premios</h1>
       
       <div className="form-group">
-        <label>Nombre del Plan (Ej: Plan 2026)</label>
+        <label>Nombre del Plan</label>
         <input 
           className="form-input" 
           value={nombre} 
@@ -55,21 +68,23 @@ const CreatePlan = () => {
           value={newPremio.titulo}
           onChange={e => setNewPremio({...newPremio, titulo: e.target.value})}
         />
+        
+        {/* CAMBIO: Input de texto para permitir '$', puntos, letras, etc. */}
         <input 
-          placeholder="Valor" 
-          type="number"
+          placeholder="Valor (Ej: $ 2.600 Millones)" 
+          type="text" 
           className="form-input"
           value={newPremio.valor}
-          onChange={e => setNewPremio({...newPremio, valor: parseFloat(e.target.value)})}
+          onChange={e => setNewPremio({...newPremio, valor: e.target.value})}
         />
+        
         <select 
           className="form-select"
           value={newPremio.cantidad_balotas}
           onChange={e => setNewPremio({...newPremio, cantidad_balotas: parseInt(e.target.value)})}
         >
+          <option value="6">6 Cifras</option>
           <option value="4">4 Cifras</option>
-          <option value="3">3 Cifras</option>
-          <option value="2">2 Cifras</option>
         </select>
         <button className="btn btn-secondary" onClick={addPremio}>+</button>
       </div>
@@ -78,7 +93,7 @@ const CreatePlan = () => {
         <thead>
           <tr>
             <th>Título</th>
-            <th>Valor</th>
+            <th>Valor (Texto)</th>
             <th>Balotas</th>
             <th>Acción</th>
           </tr>
@@ -87,7 +102,8 @@ const CreatePlan = () => {
           {premios.map((p, i) => (
             <tr key={i}>
               <td>{p.titulo}</td>
-              <td>${p.valor.toLocaleString()}</td>
+              {/* Mostramos el valor tal cual se escribió */}
+              <td>{p.valor}</td> 
               <td>{p.cantidad_balotas}</td>
               <td><button onClick={() => removePremio(i)} style={{color:'red'}}>X</button></td>
             </tr>
