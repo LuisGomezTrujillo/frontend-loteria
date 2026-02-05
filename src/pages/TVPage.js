@@ -48,6 +48,13 @@ const TVPage = () => {
         return;
       }
 
+      if (key === 'z') {
+        e.preventDefault();
+        setIsFocusEnabled(prev => !prev);
+        alert(isFocusEnabled ? "Modo TV Desactivado" : "Modo TV Activado");
+        return;
+      }
+
       if (e.target.tagName === 'INPUT') return;
 
       if (isFocusEnabled) {
