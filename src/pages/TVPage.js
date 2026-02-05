@@ -112,7 +112,7 @@ const TVPage = () => {
         </div>
         <div className="header-column right">
           <div className="sorteo-info-header">
-            <span className="sorteo-label">SORTEO No.</span>
+            <span className="sorteo-label">SORTEO </span>
             <span className="sorteo-number">{config.numero_sorteo}</span>
             <div className="sorteo-date">{config.fecha}</div>
           </div>
@@ -121,11 +121,7 @@ const TVPage = () => {
 
       {/* CUERPO CENTRAL: PREMIO E INPUTS CENTRADOS */}
       <main className="content-area">
-        <div className="prize-info">
-          <div className="prize-title">{currentPrize.titulo}</div>
-          <div className="prize-value">{currentPrize.valor}</div>
-        </div>
-
+        
         <div className="inputs-container">
           {inputValues.slice(0, numInputs).map((val, index) => (
             <React.Fragment key={index}>
@@ -144,6 +140,12 @@ const TVPage = () => {
             </React.Fragment>
           ))}
         </div>
+
+        <div className="prize-info">
+          <div className="prize-title">{currentPrize.titulo}</div>
+          <div className="prize-value">{currentPrize.valor}</div>
+        </div>
+
       </main>
     </div>
   );

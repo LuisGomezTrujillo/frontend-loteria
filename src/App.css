@@ -33,7 +33,7 @@ body, html {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 80px;
 }
 
 .header-column {
@@ -77,7 +77,8 @@ body, html {
 .sorteo-number {
   font-size: 5rem;
   font-weight: 900;
-  color: var(--color-oro-brillo);
+  color: white;
+  /* color: var(--color-oro-brillo); */
 }
 
 .sorteo-date {
@@ -100,6 +101,7 @@ body, html {
   font-size: 4.5rem;
   font-weight: 900;
   color: var(--color-oro-brillo);
+  margin-top: 5px;
   margin-bottom: 5px;
   text-shadow: 4px 4px 15px #000;
 }
