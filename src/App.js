@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import TVPage from './pages/TVPage';
-import CreatePlan from './pages/CreatePlan';
+import ManagePlan from './pages/ManagePlan';
 import CreateSorteo from './pages/CreateSorteo';
 import ManageResultados from './pages/ManageResultados';
 
@@ -32,7 +32,7 @@ function App() {
         <Route path="/" element={<TVPage />} />
         
         {/* Rutas Administrativas */}
-        <Route path="/admin/plan" element={<CreatePlan />} />
+        <Route path="/admin/plan" element={<ManagePlan />} />
         <Route path="/admin/sorteo" element={<CreateSorteo />} />
         <Route path="/admin/resultados" element={<ManageResultados />} />
       </Routes>
