@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import logoMoneda from '../assets/logo.png';
 import textoLogo from '../assets/letras.png';
@@ -8,14 +8,18 @@ const TVPage = () => {
   const [plan, setPlan] = useState([]);
   const [config, setConfig] = useState({ id: null, numero_sorteo: '---', fecha: '---' });
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   // Mantenemos el array de 6 para no romper la estructura, 
   // pero solo usaremos los que el premio indique.
-  const [inputValues, setInputValues] = useState(Array(6).fill("")); 
-  const [isFocusEnabled, setIsFocusEnabled] = useState(false); 
-  const [saveStatus, setSaveStatus] = useState('idle'); 
-  
+  const [inputValues, setInputValues] = useState(Array(6).fill(""));
+  const [isFocusEnabled, setIsFocusEnabled] = useState(false);
+  const [saveStatus, setSaveStatus] = useState('idle');
+
   const inputRefs = useRef([]);
+
+  const currentPrize = plan[currentIndex];
+  // Determinar cuántas balotas mostrar (4 o 6) basado en el backend
+  const numInputs = currentPrize ? parseInt(currentPrize.cantidad_balotas) : 6;
 
   // --- 1. CARGA DE DATOS ---
   useEffect(() => {
@@ -36,12 +40,8 @@ const TVPage = () => {
     fetchData();
   }, []);
 
-  const currentPrize = plan[currentIndex];
-  // Determinar cuántas balotas mostrar (4 o 6) basado en el backend
-  const numInputs = currentPrize ? parseInt(currentPrize.cantidad_balotas) : 6;
-
-  // --- 2. ENVIAR AL BACKEND ---
-  const saveResult = async () => {
+  // --- 2. ENVIAR AL BACKEND (Envuelto en useCallback para evitar advertencias) ---
+  const saveResult = useCallback(async () => {
     if (!config.id || !currentPrize) return;
 
     // Solo concatenamos los valores que están visibles en pantalla
@@ -55,13 +55,13 @@ const TVPage = () => {
 
     try {
       await axios.post('http://localhost:8000/resultados/', payload);
-      setSaveStatus('success'); 
+      setSaveStatus('success');
       console.log("Resultado guardado:", rawResult);
     } catch (error) {
       console.error("Error al guardar.", error);
       setSaveStatus('error');
     }
-  };
+  }, [config.id, currentPrize, inputValues, numInputs]);
 
   // --- 3. MANEJO DE TECLADO GLOBAL ---
   useEffect(() => {
@@ -83,14 +83,14 @@ const TVPage = () => {
       if (key === 'arrowdown' || key === 's') {
         if (currentIndex < plan.length - 1) {
           setCurrentIndex(prev => prev + 1);
-          setInputValues(Array(6).fill("")); 
+          setInputValues(Array(6).fill(""));
           setSaveStatus('idle');
         }
       }
       if (key === 'arrowup' || key === 'w') {
         if (currentIndex > 0) {
           setCurrentIndex(prev => prev - 1);
-          setInputValues(Array(6).fill("")); 
+          setInputValues(Array(6).fill(""));
           setSaveStatus('idle');
         }
       }
@@ -98,7 +98,7 @@ const TVPage = () => {
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [currentIndex, plan, inputValues, config, numInputs]); 
+  }, [currentIndex, plan, saveResult]); // Dependencias limpias
 
   // --- 4. FOCUS AUTOMÁTICO ---
   useEffect(() => {
@@ -109,19 +109,33 @@ const TVPage = () => {
     }
   }, [isFocusEnabled, currentIndex]);
 
-  // --- 5. LÓGICA DE INPUTS (BALOTAS) ---
+  // --- 5. EFECTO PARA PASAR AL SIGUIENTE PREMIO AUTOMÁTICAMENTE ---
+  useEffect(() => {
+    if (saveStatus === 'success') {
+      const timer = setTimeout(() => {
+        if (currentIndex < plan.length - 1) {
+          setCurrentIndex(prev => prev + 1);
+          setInputValues(Array(6).fill(""));
+        }
+        setSaveStatus('idle');
+        setIsFocusEnabled(false); 
+      }, 800); 
+
+      return () => clearTimeout(timer);
+    }
+  }, [saveStatus, currentIndex, plan.length]);
+
+  // --- 6. LÓGICA DE INPUTS (BALOTAS) ---
   const handleChange = (e, index) => {
     const val = e.target.value;
-    // La lógica de la serie (2 dígitos) solo aplica si el premio es de 6 balotas e index 4
-    const isFifthBall = numInputs === 6 && index === 4; 
+    const isFifthBall = numInputs === 6 && index === 4;
     const maxLength = isFifthBall ? 2 : 1;
 
     if (/^\d*$/.test(val) && val.length <= maxLength) {
       const newValues = [...inputValues];
       newValues[index] = val;
       setInputValues(newValues);
-      
-      // Auto-focus al siguiente solo si existe dentro del rango actual
+
       if (val.length === maxLength && index < numInputs - 1) {
         inputRefs.current[index + 1].focus();
       }
@@ -130,13 +144,12 @@ const TVPage = () => {
 
   const handleInputKeyDown = (e, index) => {
     const key = e.key.toLowerCase();
-    
+
     if ((key === 'arrowleft' || key === 'a') && index > 0) {
       e.preventDefault();
       inputRefs.current[index - 1].focus();
     }
-    
-    // Navegación derecha limitada por numInputs
+
     if ((key === 'arrowright' || key === 'd') && index < numInputs - 1) {
       e.preventDefault();
       inputRefs.current[index + 1].focus();
@@ -147,16 +160,9 @@ const TVPage = () => {
     }
   };
 
-  // --- RENDERIZADO ---
-  if (!config.id) return <div className="tv-container"><h1>Cargando Sorteo...</h1></div>;
-
-  const valueStyle = saveStatus === 'success'
-    ? { color: '#28a745', textShadow: '0 0 30px #4eff70', transition: 'all 0.5s ease-in-out' }
-    : {};
 
   return (
     <div className="tv-container">
-      
       <header className="main-header">
         <div className="header-column">
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -168,7 +174,7 @@ const TVPage = () => {
           <div className="sorteo-info-header">
             <span className="sorteo-label">SORTEO</span>
             <span className="sorteo-number">{config.numero_sorteo}</span>
-            <div className="sorteo-date" style={{ textTransform: 'capitalize' }}>
+            <div className="sorteo-date">
               {new Date(config.fecha).toLocaleDateString('es-CO', { dateStyle: 'long' })}
             </div>
           </div>
@@ -176,22 +182,18 @@ const TVPage = () => {
       </header>
 
       <main className="content-area">
-        
         <div className="inputs-container">
-          {/* Solo mapeamos hasta numInputs (4 o 6) */}
           {inputValues.slice(0, numInputs).map((val, index) => (
             <React.Fragment key={index}>
-              {/* Separador de serie solo si es el premio de 6 balotas */}
               {numInputs === 6 && index === 4 && <div className="spacer-serie" />}
-              
               <input
                 ref={el => inputRefs.current[index] = el}
                 type="text"
                 inputMode="numeric"
-                className="balota-esferica" 
-                style={{ 
-                   fontSize: (numInputs === 6 && index === 4 && val.length > 1) ? '6vh' : '9vh',
-                   cursor: isFocusEnabled ? 'text' : 'default'
+                className="balota-esferica"
+                style={{
+                  fontSize: (numInputs === 6 && index === 4 && val.length > 1) ? '6vh' : '9vh',
+                  cursor: isFocusEnabled ? 'text' : 'default'
                 }}
                 value={val}
                 onChange={(e) => handleChange(e, index)}
@@ -203,20 +205,24 @@ const TVPage = () => {
           ))}
         </div>
 
-        <div className={`prize-info ${isFocusEnabled ? 'animate-heartbeat' : ''}`} >
+        <div
+          className={`prize-info 
+            ${isFocusEnabled ? 'animate-heartbeat' : ''} 
+            ${saveStatus === 'success' ? 'animate-rotate' : ''}`
+          }
+        >
           <div className="prize-title">
             {currentPrize?.titulo}
           </div>
-          
-          <div className="prize-value" style={valueStyle}>
+          <div className="prize-value">
             <span className="prize-symbol">$</span>
             {currentPrize?.valor}
           </div>
         </div>
-
       </main>
     </div>
   );
 };
 
 export default TVPage;
+
