@@ -56,7 +56,7 @@ body, html {
 .inputs-container { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 1.5vw; width: 100%; margin-bottom: 2vh; }
 
 .balota-esferica {
-  width: 18vh; height: 18vh; border-radius: 50%; border: none; background: var(--balota-bg);
+  width: 20vh; height: 20vh; border-radius: 50%; border: none; background: var(--balota-bg);
   box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5), 10px 10px 30px rgba(0,0,0,0.4);
   font-size: 9vh; font-weight: bold; text-align: center; color: #222; outline: none;
   display: flex; justify-content: center; align-items: center; transition: transform 0.1s;

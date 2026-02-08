@@ -9,14 +9,11 @@ const TVPage = () => {
   const [config, setConfig] = useState({ id: null, numero_sorteo: '---', fecha: '---' });
   const [currentIndex, setCurrentIndex] = useState(0);
   
-  // 6 Inputs visuales: 
-  // Indices 0-3 -> Número (4 dígitos)
-  // Index 4 -> Serie Parte 1 (2 dígitos)
-  // Index 5 -> Serie Parte 2 (1 dígito)
-  // Total caracteres concatenados = 7
+  // Mantenemos el array de 6 para no romper la estructura, 
+  // pero solo usaremos los que el premio indique.
   const [inputValues, setInputValues] = useState(Array(6).fill("")); 
-  const [isFocusEnabled, setIsFocusEnabled] = useState(false); // Modo Edición
-  const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'success', 'error'
+  const [isFocusEnabled, setIsFocusEnabled] = useState(false); 
+  const [saveStatus, setSaveStatus] = useState('idle'); 
   
   const inputRefs = useRef([]);
 
@@ -40,21 +37,15 @@ const TVPage = () => {
   }, []);
 
   const currentPrize = plan[currentIndex];
-  // CORRECCIÓN: Usar 'cantidad_balotas' en lugar de 'inputs' que no existía en el esquema
+  // Determinar cuántas balotas mostrar (4 o 6) basado en el backend
   const numInputs = currentPrize ? parseInt(currentPrize.cantidad_balotas) : 6;
-
 
   // --- 2. ENVIAR AL BACKEND ---
   const saveResult = async () => {
     if (!config.id || !currentPrize) return;
 
-    // Concatenar: Une los 6 inputs.
-    const rawResult = inputValues.join('');
-
-    // Validación local básica
-    if (rawResult.length < 4) {
-      console.warn(`Longitud actual: ${rawResult.length}. Parece incompleto.`);
-    }
+    // Solo concatenamos los valores que están visibles en pantalla
+    const rawResult = inputValues.slice(0, numInputs).join('');
 
     const payload = {
       sorteo_id: config.id,
@@ -65,12 +56,9 @@ const TVPage = () => {
     try {
       await axios.post('http://localhost:8000/resultados/', payload);
       setSaveStatus('success'); 
-      console.log("Resultado guardado correctamente:", rawResult);
+      console.log("Resultado guardado:", rawResult);
     } catch (error) {
       console.error("Error al guardar.", error);
-      if (error.response) {
-          console.error("Respuesta del servidor:", error.response.data);
-      }
       setSaveStatus('error');
     }
   };
@@ -80,32 +68,29 @@ const TVPage = () => {
     const handleGlobalKeyDown = (e) => {
       const key = e.key.toLowerCase();
 
-      // ENTER / Q: Toggle Modo Edición
       if (key === 'enter' || key === 'q') {
         e.preventDefault();
         setIsFocusEnabled(prev => !prev);
         return;
       }
 
-      // Z: Guardar Resultado
       if (key === 'z') {
         e.preventDefault();
         saveResult();
         return;
       }
 
-      // FLECHAS ARRIBA/ABAJO o W/S: Cambiar Premio
       if (key === 'arrowdown' || key === 's') {
         if (currentIndex < plan.length - 1) {
           setCurrentIndex(prev => prev + 1);
-          setInputValues(Array(6).fill("")); // Reset inputs
+          setInputValues(Array(6).fill("")); 
           setSaveStatus('idle');
         }
       }
       if (key === 'arrowup' || key === 'w') {
         if (currentIndex > 0) {
           setCurrentIndex(prev => prev - 1);
-          setInputValues(Array(6).fill("")); // Reset inputs
+          setInputValues(Array(6).fill("")); 
           setSaveStatus('idle');
         }
       }
@@ -113,7 +98,7 @@ const TVPage = () => {
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [currentIndex, plan, inputValues, config]); 
+  }, [currentIndex, plan, inputValues, config, numInputs]); 
 
   // --- 4. FOCUS AUTOMÁTICO ---
   useEffect(() => {
@@ -127,8 +112,8 @@ const TVPage = () => {
   // --- 5. LÓGICA DE INPUTS (BALOTAS) ---
   const handleChange = (e, index) => {
     const val = e.target.value;
-    // La QUINTA esfera es el índice 4. Esta debe tener 2 dígitos.
-    const isFifthBall = index === 4; 
+    // La lógica de la serie (2 dígitos) solo aplica si el premio es de 6 balotas e index 4
+    const isFifthBall = numInputs === 6 && index === 4; 
     const maxLength = isFifthBall ? 2 : 1;
 
     if (/^\d*$/.test(val) && val.length <= maxLength) {
@@ -136,8 +121,8 @@ const TVPage = () => {
       newValues[index] = val;
       setInputValues(newValues);
       
-      // Auto-focus al siguiente si se llena y no es el último input
-      if (val.length === maxLength && index < 5) {
+      // Auto-focus al siguiente solo si existe dentro del rango actual
+      if (val.length === maxLength && index < numInputs - 1) {
         inputRefs.current[index + 1].focus();
       }
     }
@@ -146,19 +131,17 @@ const TVPage = () => {
   const handleInputKeyDown = (e, index) => {
     const key = e.key.toLowerCase();
     
-    // Navegación Izquierda: Flecha Izquierda o 'A'
     if ((key === 'arrowleft' || key === 'a') && index > 0) {
       e.preventDefault();
       inputRefs.current[index - 1].focus();
     }
     
-    // Navegación Derecha: Flecha Derecha o 'D'
-    if ((key === 'arrowright' || key === 'd') && index < 5) {
+    // Navegación derecha limitada por numInputs
+    if ((key === 'arrowright' || key === 'd') && index < numInputs - 1) {
       e.preventDefault();
       inputRefs.current[index + 1].focus();
     }
 
-    // Borrar y regresar (Backspace)
     if (key === 'backspace' && !inputValues[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     }
@@ -167,19 +150,13 @@ const TVPage = () => {
   // --- RENDERIZADO ---
   if (!config.id) return <div className="tv-container"><h1>Cargando Sorteo...</h1></div>;
 
-  // Estilo dinámico SOLO para el VALOR del premio
   const valueStyle = saveStatus === 'success'
-    ? { 
-        color: '#28a745', // Verde éxito
-        textShadow: '0 0 30px #4eff70', // Brillo verde neón
-        transition: 'all 0.5s ease-in-out' 
-      }
+    ? { color: '#28a745', textShadow: '0 0 30px #4eff70', transition: 'all 0.5s ease-in-out' }
     : {};
 
   return (
     <div className="tv-container">
       
-      {/* HEADER */}
       <header className="main-header">
         <div className="header-column">
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -198,15 +175,14 @@ const TVPage = () => {
         </div>
       </header>
 
-      {/* CONTENIDO PRINCIPAL */}
       <main className="content-area">
         
-        {/* INPUTS TIPO BALOTAS */}
         <div className="inputs-container">
-          {inputValues.map((val, index) => (
+          {/* Solo mapeamos hasta numInputs (4 o 6) */}
+          {inputValues.slice(0, numInputs).map((val, index) => (
             <React.Fragment key={index}>
-              {/* Separador visual ANTES de la serie (Antes del índice 4) */}
-              {index === 4 && <div className="spacer-serie" />}
+              {/* Separador de serie solo si es el premio de 6 balotas */}
+              {numInputs === 6 && index === 4 && <div className="spacer-serie" />}
               
               <input
                 ref={el => inputRefs.current[index] = el}
@@ -214,8 +190,7 @@ const TVPage = () => {
                 inputMode="numeric"
                 className="balota-esferica" 
                 style={{ 
-                   // Si es la QUINTA balota (index 4) y tiene 2 dígitos, reducimos fuente
-                   fontSize: (index === 4 && val.length > 1) ? '6vh' : '9vh',
+                   fontSize: (numInputs === 6 && index === 4 && val.length > 1) ? '6vh' : '9vh',
                    cursor: isFocusEnabled ? 'text' : 'default'
                 }}
                 value={val}
@@ -228,17 +203,13 @@ const TVPage = () => {
           ))}
         </div>
 
-        {/* INFO PREMIO */}
-        <div className= {`prize-info ${isFocusEnabled ? 'animate-heartbeat' : ''}`} >
+        <div className={`prize-info ${isFocusEnabled ? 'animate-heartbeat' : ''}`} >
           <div className="prize-title">
             {currentPrize?.titulo}
           </div>
           
-          {/* Solo cambiamos el color del valor */}
           <div className="prize-value" style={valueStyle}>
-            <span className="prize-symbol" >
-                $
-            </span>
+            <span className="prize-symbol">$</span>
             {currentPrize?.valor}
           </div>
         </div>
