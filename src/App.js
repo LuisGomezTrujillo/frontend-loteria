@@ -3,8 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 import TVPage from './pages/TVPage';
 import ManagePlan from './pages/ManagePlan';
-import ManageSorteo from './pages/ManageSorteo'; // Cambio aquí
+import ManageSorteo from './pages/ManageSorteo'; 
 import ManageResultados from './pages/ManageResultados';
+import ResultadosPage from './pages/ResultadosPage';
 
 // Componente de menú para navegación administrativa
 const NavMenu = () => (
@@ -13,6 +14,7 @@ const NavMenu = () => (
     <Link to="/admin/plan" style={{color:'white', margin:5}}>GESTIONAR PLANES</Link> |
     <Link to="/admin/sorteo" style={{color:'white', margin:5}}>GESTIONAR SORTEOS</Link> |
     <Link to="/admin/resultados" style={{color:'white', margin:5}}>REGISTRAR RESULTADOS</Link>
+    <Link to="/tablero" style={{color:'white', margin:5}}>TABLERO DE RESULTADOS</Link>
   </nav>
 );
 
@@ -37,6 +39,8 @@ function App() {
         <Route path="/admin/sorteo" element={<ManageSorteo />} /> 
         
         <Route path="/admin/resultados" element={<ManageResultados />} />
+
+        <Route path="/tablero" element={<ResultadosPage />} />
       </Routes>
     </Router>
   );

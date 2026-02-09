@@ -295,3 +295,275 @@ body, html {
     opacity: 1;
   }
 }
+
+/* =========================================
+   ESTILOS NUEVOS PARA GESTIÓN DE RESULTADOS
+   ========================================= */
+
+/* Visualización del Numero en Tabla Admin */
+.result-display-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', monospace; /* Fuente monoespaciada para alinear números */
+}
+
+.result-main {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+}
+
+.result-separator {
+  margin: 0 10px;
+  color: #666;
+  font-weight: 300;
+  font-size: 2rem;
+}
+
+.result-serie {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--color-oro); /* La serie en Dorado para distinguirla */
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+/* Filas de Tabla */
+.row-done {
+  background: rgba(40, 167, 69, 0.1) !important; /* Fondo verde muy sutil para completados */
+  border-left: 5px solid var(--color-verde);
+}
+.row-pending {
+  border-left: 5px solid #555;
+}
+
+.td-title {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ddd;
+}
+
+/* Botones Pequeños para la Tabla */
+.btn-sm {
+  padding: 5px 15px;
+  height: 45px; /* Un poco más bajos que los gigantes */
+  font-size: 1rem;
+  margin: 0 5px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-success {
+  background-color: var(--color-verde);
+  color: white;
+}
+.btn-success:hover {
+  background-color: #218838;
+}
+
+/* Input en modo edición */
+.input-editing {
+  border-color: var(--color-oro);
+  background: #000;
+  color: var(--color-oro);
+  text-align: center;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+
+/* =========================================
+   PÁGINA PÚBLICA DE RESULTADOS (TABLERO)
+   ========================================= */
+
+.resultados-container {
+  min-height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle at center, #1b3b80 0%, #0a1a4a 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  overflow-y: auto; /* Permite scroll si hay muchos premios */
+}
+
+/* Header */
+.res-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--color-oro);
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.res-logo-area { display: flex; align-items: center; height: 80px; }
+.res-logo-img { height: 100%; animation: spin 10s infinite linear; }
+.res-logo-text { height: 60%; margin-left: 15px; }
+
+.res-title-area { text-align: right; color: white; }
+.res-title-area h1 { margin: 0; font-size: 2.5rem; color: var(--color-oro); letter-spacing: 2px; }
+.res-title-area h2 { margin: 5px 0 0 0; font-size: 1.5rem; color: #ccc; font-weight: normal; }
+
+/* Grid Principal */
+.res-grid {
+  display: grid;
+  /* Intenta crear columnas de mínimo 300px, llenando el espacio */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+  gap: 20px;
+  flex: 1;
+}
+
+/* Tarjeta de Grupo de Premios */
+.res-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.res-card-header {
+  background: linear-gradient(90deg, #d4af37 0%, #f9e38d 50%, #d4af37 100%);
+  color: #0a1a4a;
+  font-weight: bold;
+  font-size: 1.4rem;
+  text-align: center;
+  padding: 8px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.res-card-body {
+  padding: 10px;
+  flex: 1;
+}
+
+/* Tabla interna de la tarjeta */
+.res-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.res-table td {
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.col-premio {
+  color: #ccc;
+  font-size: 1.1rem;
+  width: 45%;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.col-numero {
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+/* Estilos de Números */
+.num-ganador { color: white; letter-spacing: 1px; }
+.num-serie { color: var(--color-oro); margin-left: 5px; font-size: 1.2rem; }
+.num-placeholder { color: #444; letter-spacing: 3px; }
+
+/* Estilo Especial para el PREMIO MAYOR */
+.card-mayor {
+  grid-column: 1 / -1; /* Ocupa todo el ancho si el grid lo permite */
+  border: 2px solid var(--color-oro);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  background: rgba(10, 26, 74, 0.8);
+}
+
+.card-mayor .res-card-header {
+  font-size: 2rem;
+  padding: 15px;
+  background: var(--color-oro);
+}
+
+.card-mayor .mayor-amount {
+  text-align: center;
+  font-size: 3rem;
+  color: white;
+  font-weight: 900;
+  text-shadow: 0 0 10px var(--color-oro);
+  margin-bottom: 10px;
+}
+
+.card-mayor .col-premio { font-size: 1.5rem; text-align: center; width: 100%; display: block;}
+.card-mayor .col-numero { font-size: 4rem; text-align: center; display: block; width: 100%;}
+.card-mayor .num-serie { font-size: 3rem; }
+
+/* Footer */
+.res-footer {
+  text-align: right;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  border-top: 1px solid #333;
+  padding-top: 5px;
+}
+
+/* Modificación al contenedor principal para SmartTV */
+.resultados-container {
+  min-height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle at center, #1b3b80 0%, #0a1a4a 100%);
+  display: flex;
+  flex-direction: column;
+  /* Eliminamos el padding de aquí y lo pasamos al safe-area */
+  padding: 0; 
+  margin: 0;
+  overflow: hidden; /* Evita scrolls accidentales en TV */
+}
+
+/* Contenedor de Margen Seguro (Overscan Protection) */
+.res-safe-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* Margen del 5% es el estándar para TVs antiguas */
+  margin: 5vh 5vw; 
+  box-sizing: border-box;
+  /* Opcional: una línea muy tenue para debuguear el área */
+  /* border: 1px solid rgba(255,255,255,0.05); */
+}
+
+/* Ajuste del Grid para que no se amontone en pantallas 1080p */
+.res-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+  gap: 1.5vw;
+  flex: 1;
+  align-content: start;
+}
+
+/* Optimizamos los textos para que sean legibles desde lejos (el sofá) */
+.res-card-header {
+  font-size: 1.8rem; /* Un poco más grande para TV */
+  padding: 10px;
+}
+
+.col-premio {
+  font-size: 1.3rem;
+}
+
+.col-numero {
+  font-size: 1.8rem;
+}
+
+/* Si la TV es 4K o muy grande, escalamos todo el contenido */
+@media (min-width: 2000px) {
+  .res-safe-area {
+    font-size: 1.5rem;
+  }
+  .res-title-area h1 { font-size: 4rem; }
+}
