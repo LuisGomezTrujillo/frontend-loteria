@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import logoMoneda from '../assets/logo.png';
 import textoLogo from '../assets/letras.png';
+import API_URL from '../config';
 
 const TVPage = () => {
   // --- ESTADOS ---
@@ -25,12 +26,12 @@ const TVPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resSorteos = await axios.get('http://localhost:8000/sorteos/');
+        const resSorteos = await axios.get(`${API_URL}/sorteos/`);
         if (resSorteos.data.length > 0) {
           const ultimoSorteo = resSorteos.data[resSorteos.data.length - 1];
           setConfig(ultimoSorteo);
 
-          const resPlan = await axios.get(`http://localhost:8000/planes/${ultimoSorteo.plan_id}`);
+          const resPlan = await axios.get(`${API_URL}/planes/${ultimoSorteo.plan_id}`);
           setPlan(resPlan.data.premios);
         }
       } catch (error) {
@@ -54,7 +55,7 @@ const TVPage = () => {
     };
 
     try {
-      await axios.post('http://localhost:8000/resultados/', payload);
+      await axios.post(`${API_URL}/resultados/`, payload);
       setSaveStatus('success');
       console.log("Resultado guardado:", rawResult);
     } catch (error) {

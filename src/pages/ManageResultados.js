@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 
 const ManageResultados = () => {
   const [sorteos, setSorteos] = useState([]);
@@ -16,7 +17,6 @@ const ManageResultados = () => {
   const [editingPremioId, setEditingPremioId] = useState(null); // ID del premio que se está editando
   const [editValue, setEditValue] = useState(''); // Valor temporal durante la edición
 
-  const API_URL = 'http://localhost:8000';
 
   useEffect(() => {
     fetchSorteos();

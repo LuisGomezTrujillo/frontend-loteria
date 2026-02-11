@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import logoMoneda from '../assets/logo.png'; // Asegúrate de tener la ruta correcta
 import textoLogo from '../assets/letras.png'; // Asegúrate de tener la ruta correcta
+import API_URL from '../config';
 
 const ResultadosPage = () => {
   const [dataPorValor, setDataPorValor] = useState({}); // Objeto agrupado: { "50.000.000": [premio1, premio2] }

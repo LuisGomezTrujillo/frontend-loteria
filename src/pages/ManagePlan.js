@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import API_URL from '../config';
+
 
 const ManagePlan = () => {
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ const ManagePlan = () => {
     if (!nombre || premios.length === 0) return alert("Nombre y premios requeridos");
     const payload = { nombre, descripcion, premios: premios.map(({ titulo, valor, cantidad_balotas }) => ({ titulo, valor, cantidad_balotas })) };
     try {
-      await axios.post('http://localhost:8000/planes/', payload);
+      await axios.post(`${API_URL}/planes/`, payload);
       alert('Plan guardado!');
       navigate('/admin/sorteo');
     } catch (error) {

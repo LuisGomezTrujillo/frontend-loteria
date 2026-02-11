@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API_URL from '../config';
 
 const ManageSorteo = () => {
   const [sorteos, setSorteos] = useState([]);
@@ -23,8 +24,8 @@ const ManageSorteo = () => {
     setLoading(true);
     try {
       const [sorteosRes, planesRes] = await Promise.all([
-        axios.get('http://localhost:8000/sorteos/'),
-        axios.get('http://localhost:8000/planes/')
+        axios.get(`${API_URL}/sorteos/`),
+        axios.get(`${API_URL}/planes/`)
       ]);
       setSorteos(sorteosRes.data);
       setPlanes(planesRes.data);
@@ -42,10 +43,10 @@ const ManageSorteo = () => {
 
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:8000/sorteos/${formData.id}`, formData);
+        await axios.put(`${API_URL}/sorteos/${formData.id}`, formData);
         alert('Sorteo actualizado correctamente');
       } else {
-        await axios.post('http://localhost:8000/sorteos/', formData);
+        await axios.post(`${API_URL}/sorteos/`, formData);
         alert('Sorteo creado correctamente');
       }
       resetForm();
@@ -58,7 +59,7 @@ const ManageSorteo = () => {
   const handleDelete = async (id) => {
     if (window.confirm("¿Está seguro de eliminar este sorteo? Se perderán los resultados asociados.")) {
       try {
-        await axios.delete(`http://localhost:8000/sorteos/${id}`);
+        await axios.delete(`${API_URL}/sorteos/${id}`);
         fetchData();
       } catch (error) {
         alert("Error al eliminar");
