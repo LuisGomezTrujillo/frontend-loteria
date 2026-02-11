@@ -46,17 +46,57 @@ const ManagePlan = () => {
     setCurrentPremio({ id_temporal: null, titulo: '', valor: '', cantidad_balotas: 4 });
   };
 
-  const handleSavePlan = async () => {
-    if (!nombre || premios.length === 0) return alert("Nombre y premios requeridos");
-    const payload = { nombre, descripcion, premios: premios.map(({ titulo, valor, cantidad_balotas }) => ({ titulo, valor, cantidad_balotas })) };
+const handleSavePlan = async () => {
+    // 1. Validaciones básicas
+    if (!nombre.trim()) return alert("El nombre del plan es obligatorio");
+    if (premios.length === 0) return alert("Debe agregar al menos un premio");
+
+    // 2. LIMPIEZA DE DATOS (Crucial)
+    // El backend no espera 'id_temporal', solo titulo, valor y cantidad_balotas.
+    // Además aseguramos que cantidad_balotas sea un número (parseInt).
+    const premiosLimpios = premios.map(p => ({
+      titulo: p.titulo,
+      valor: p.valor,
+      cantidad_balotas: parseInt(p.cantidad_balotas)
+    }));
+
+    const payload = {
+      nombre: nombre,
+      descripcion: descripcion,
+      premios: premiosLimpios
+    };
+
     try {
-      await axios.post(`${API_URL}/planes/`, payload);
-      alert('Plan guardado!');
-      navigate('/admin/sorteo');
+      // 3. PETICIÓN AL BACKEND
+      // Usamos API_URL y agregamos la barra "/" al final
+      const response = await axios.post(`${API_URL}/planes/`, payload);
+      
+      if (response.status === 200 || response.status === 201) {
+        alert("Plan guardado exitosamente!");
+        navigate('/manage-sorteo'); // O a donde prefieras redirigir
+      }
     } catch (error) {
-      alert('Error al guardar');
+      console.error("Error guardando el plan:", error);
+      // Muestra un mensaje más detallado si es posible
+      if (error.response && error.response.data) {
+        alert(`Error del servidor: ${JSON.stringify(error.response.data)}`);
+      } else {
+        alert("Error de conexión al guardar el plan.");
+      }
     }
   };
+
+  // const handleSavePlan = async () => {
+  //   if (!nombre || premios.length === 0) return alert("Nombre y premios requeridos");
+  //   const payload = { nombre, descripcion, premios: premios.map(({ titulo, valor, cantidad_balotas }) => ({ titulo, valor, cantidad_balotas })) };
+  //   try {
+  //     await axios.post(`${API_URL}/planes/`, payload);
+  //     alert('Plan guardado!');
+  //     navigate('/admin/sorteo');
+  //   } catch (error) {
+  //     alert('Error al guardar');
+  //   }
+  // };
 
   return (
     <div className="admin-container">

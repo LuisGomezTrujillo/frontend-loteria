@@ -102,7 +102,7 @@ const ManageSorteo = () => {
         <div className="form-group" style={{ marginBottom: 0 }}>
           <label>No. Sorteo</label>
           <input 
-            type="number" 
+            type="text" 
             className="form-input"
             value={formData.numero_sorteo}
             onChange={e => setFormData({...formData, numero_sorteo: e.target.value})}
