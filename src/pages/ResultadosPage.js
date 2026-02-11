@@ -9,8 +9,7 @@ const ResultadosPage = () => {
   const [sorteoInfo, setSorteoInfo] = useState({ numero: '---', fecha: '' });
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
-  const API_URL = 'http://localhost:8000';
-
+  
   // --- FUNCIÓN DE CARGA DE DATOS ---
   const fetchData = useCallback(async () => {
     try {
