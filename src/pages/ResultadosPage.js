@@ -1,19 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import logoMoneda from '../assets/logo.png'; // Asegúrate de tener la ruta correcta
-import textoLogo from '../assets/letras.png'; // Asegúrate de tener la ruta correcta
+import logoMoneda from '../assets/logo.png'; 
+import textoLogo from '../assets/letras.png'; 
 import API_URL from '../config';
 
 const ResultadosPage = () => {
-  const [dataPorValor, setDataPorValor] = useState({}); // Objeto agrupado: { "50.000.000": [premio1, premio2] }
+  const [dataPorValor, setDataPorValor] = useState({});
   const [sorteoInfo, setSorteoInfo] = useState({ numero: '---', fecha: '' });
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
+  // Función para formatear fecha CO
+  const formatearFechaCO = (fechaStr) => {
+    if (!fechaStr || fechaStr === '---') return '';
+    const fecha = new Date(`${fechaStr}T00:00:00`);
+    return fecha.toLocaleDateString('es-CO', { 
+      year: 'numeric', month: 'long', day: 'numeric' 
+    });
+  };
   
-  // --- FUNCIÓN DE CARGA DE DATOS ---
   const fetchData = useCallback(async () => {
     try {
-      // 1. Obtener Sorteos para buscar el último activo
       const resSorteos = await axios.get(`${API_URL}/sorteos/`);
       if (resSorteos.data.length === 0) return;
       
@@ -23,29 +29,24 @@ const ResultadosPage = () => {
         fecha: ultimoSorteo.fecha 
       });
 
-      // 2. Obtener el Plan (Estructura completa de premios vacíos)
       const resPlan = await axios.get(`${API_URL}/planes/${ultimoSorteo.plan_id}`);
       const todosLosPremios = resPlan.data.premios;
 
-      // 3. Obtener Resultados ya jugados
+      // Usamos el número de sorteo (string) para la consulta pública
       const resResultados = await axios.get(`${API_URL}/sorteos/${ultimoSorteo.numero_sorteo}/publico`);
       const jugados = resResultados.data.resultados || [];
 
-      // 4. Fusionar y Agrupar
       const grupos = {};
 
       todosLosPremios.forEach(premio => {
-        // Buscamos si ya tiene resultado
         const resultado = jugados.find(j => j.premio === premio.titulo);
-        
         const item = {
           titulo: premio.titulo,
           valor: premio.valor,
           balotas: premio.cantidad_balotas,
-          numero: resultado ? resultado.numero_ganador : null // Si no hay, es null
+          numero: resultado ? resultado.numero_ganador : null 
         };
 
-        // Agrupamos por VALOR (Ej: "50.000.000")
         if (!grupos[premio.valor]) {
           grupos[premio.valor] = [];
         }
@@ -60,20 +61,15 @@ const ResultadosPage = () => {
     }
   }, []);
 
-  // --- EFECTO: CARGA INICIAL Y TIMER DE 30s ---
   useEffect(() => {
-    fetchData(); // Carga inmediata
-    const intervalo = setInterval(fetchData, 30000); // 30 segundos
+    fetchData(); 
+    const intervalo = setInterval(fetchData, 30000); 
     return () => clearInterval(intervalo);
   }, [fetchData]);
 
-
-  // --- FORMATO VISUAL DEL NÚMERO (Separar Serie) ---
   const renderNumero = (numero, cantidadBalotas) => {
     if (!numero) return <span className="num-placeholder">{"-".repeat(cantidadBalotas)}</span>;
 
-    // Lógica visual: Si es largo (>4), separamos las ultimas 3 cifras (serie)
-    // Ajusta esta lógica si tu serie es de 2 cifras.
     let principal = numero;
     let serie = "";
 
@@ -90,17 +86,13 @@ const ResultadosPage = () => {
     );
   };
 
-  // Ordenar las claves (valores de premios) para que el Mayor salga al final o al principio
-  // Esto es opcional, depende de cómo quieras el orden. Aquí intentamos mantener el orden de inserción o alfabético inverso
   const gruposOrdenados = Object.keys(dataPorValor).sort((a, b) => {
-      // Intento básico de ordenamiento por longitud de cadena (asumiendo formato moneda "$100...")
-      return a.length - b.length; 
+      return b.length - a.length; 
   });
 
   return (
     <div className="resultados-container">
-        <div className="res-safe-area"> {/* Nuevo contenedor de seguridad */}
-      {/* HEADER */}
+        <div className="res-safe-area">
       <header className="res-header">
         <div className="res-logo-area">
             <img src={logoMoneda} alt="Logo" className="res-logo-img" />
@@ -108,20 +100,20 @@ const ResultadosPage = () => {
         </div>
         <div className="res-title-area">
             <h1>TABLERO DE RESULTADOS</h1>
-            <h2>SORTEO {sorteoInfo.numero} • {sorteoInfo.fecha}</h2>
+            <h2>SORTEO {sorteoInfo.numero} • {formatearFechaCO(sorteoInfo.fecha)}</h2>
         </div>
       </header>
 
-      {/* GRILLA DE PREMIOS */}
       <main className="res-grid">
         {gruposOrdenados.map((valorPremio) => {
             const listaPremios = dataPorValor[valorPremio];
-            const esMayor = valorPremio.toLowerCase().includes("mayor") || valorPremio.includes("2.600") || listaPremios[0].titulo.toLowerCase().includes("mayor");
+            // Detectar premio mayor
+            const esMayor = listaPremios.some(p => p.titulo.toLowerCase().includes("mayor"));
             
             return (
                 <div key={valorPremio} className={`res-card ${esMayor ? 'card-mayor' : ''}`}>
                     <div className="res-card-header">
-                        {esMayor ? " PREMIO MAYOR " : valorPremio}
+                        {esMayor ? "PREMIO MAYOR" : valorPremio}
                     </div>
                     <div className="res-card-body">
                         {esMayor && <div className="mayor-amount">{valorPremio}</div>}

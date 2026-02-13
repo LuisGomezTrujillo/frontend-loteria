@@ -37,6 +37,7 @@ const ManageSorteo = () => {
   };
 
   const handleSubmit = async () => {
+    // Validación básica
     if (!formData.numero_sorteo || !formData.fecha || !formData.plan_id) {
       return alert("Por favor complete todos los campos");
     }
@@ -87,6 +88,13 @@ const ManageSorteo = () => {
   const getPlanName = (id) => {
     const plan = planes.find(p => p.id === id);
     return plan ? plan.nombre : `ID: ${id}`;
+  };
+
+  // FUNCIÓN AUXILIAR PARA LA TABLA (Misma lógica que TVPage para evitar error de -1 día)
+  const formatearFechaTabla = (fechaStr) => {
+    if (!fechaStr) return '';
+    const fecha = new Date(`${fechaStr}T00:00:00`);
+    return fecha.toLocaleDateString('es-CO');
   };
 
   return (
@@ -170,7 +178,7 @@ const ManageSorteo = () => {
                 sorteos.map((s) => (
                   <tr key={s.id}>
                     <td><strong style={{color: 'var(--color-oro)'}}>{s.numero_sorteo}</strong></td>
-                    <td>{s.fecha}</td>
+                    <td>{formatearFechaTabla(s.fecha)}</td>
                     <td>{getPlanName(s.plan_id)}</td>
                     <td style={{ textAlign: 'center' }}>
                       <button 

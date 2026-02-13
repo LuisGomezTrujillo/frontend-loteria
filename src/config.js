@@ -1,6 +1,6 @@
 
-
-const API_URL ="https://backend-loteria-920p.onrender.com";
+// const API_URL ="https://backend-loteria-920p.onrender.com";  para producción
+const API_URL = "http://localhost:8000"; // para desarrollo
 
 
 export default API_URL;

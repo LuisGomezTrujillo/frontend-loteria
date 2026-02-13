@@ -14,9 +14,8 @@ const ManageResultados = () => {
   const [currentInput, setCurrentInput] = useState({}); 
 
   // Control de Edición
-  const [editingPremioId, setEditingPremioId] = useState(null); // ID del premio que se está editando
-  const [editValue, setEditValue] = useState(''); // Valor temporal durante la edición
-
+  const [editingPremioId, setEditingPremioId] = useState(null);
+  const [editValue, setEditValue] = useState(''); 
 
   useEffect(() => {
     fetchSorteos();
@@ -28,22 +27,36 @@ const ManageResultados = () => {
       .catch(err => console.error(err));
   };
 
+  // Función para formatear la fecha correctamente en Colombia
+  const formatearFechaCO = (fechaStr) => {
+    if (!fechaStr) return '';
+    // Agregamos hora para evitar conversión a UTC que resta un día
+    const fecha = new Date(`${fechaStr}T00:00:00`);
+    return fecha.toLocaleDateString('es-CO');
+  };
+
   const loadSorteoData = async (sorteoId) => {
     if(!sorteoId) return;
     setLoading(true);
-    setEditingPremioId(null); // Resetear edición si cambiamos de sorteo
+    setEditingPremioId(null); 
     try {
+      // 1. Obtener info básica del Sorteo
       const sorteoRes = await axios.get(`${API_URL}/sorteos/${sorteoId}`);
       const sorteo = sorteoRes.data;
 
+      // 2. Obtener el Plan de Premios
       const planRes = await axios.get(`${API_URL}/planes/${sorteo.plan_id}`);
       const plan = planRes.data;
 
+      // 3. Obtener resultados PÚBLICOS (que ya tienen los ganadores)
+      // Nota: numero_sorteo ahora es string, funciona igual en la URL
       const resultadosRes = await axios.get(`${API_URL}/sorteos/${sorteo.numero_sorteo}/publico`);
       const registrados = resultadosRes.data.resultados || [];
 
+      // 4. Mapear estado
       const premiosStatus = plan.premios.map(premio => {
-        const resultadoExistente = registrados.find(r => r.premio === premio.titulo);
+        // Buscamos si ya existe resultado para este premio (por ID o Titulo)
+        const resultadoExistente = registrados.find(r => r.premio_id === premio.id || r.premio === premio.titulo);
         return {
           ...premio,
           yaJugado: !!resultadoExistente,
@@ -81,12 +94,9 @@ const ManageResultados = () => {
     }
 
     try {
-      // Nota: Ajustamos el endpoint para que coincida con main.py existente o el wrapper
-      // Si tu backend usa /resultados/ directo, ajusta aquí.
-      // Aquí asumimos que usas el endpoint original de POST, pero enviando los datos correctos.
       await axios.post(`${API_URL}/resultados/`, {
         sorteo_id: selectedSorteoId,
-        premio_titulo: premio.titulo, // El backend original pedía titulo
+        premio_titulo: premio.titulo, 
         numeros_ganadores: numero
       });
       
@@ -102,6 +112,7 @@ const ManageResultados = () => {
     if(!window.confirm(`¿Estás seguro de borrar el resultado de ${premio.titulo}?`)) return;
 
     try {
+      // Usamos endpoint: DELETE /resultados/{sorteo_id}/{premio_id}
       await axios.delete(`${API_URL}/resultados/${selectedSorteoId}/${premio.id}`);
       loadSorteoData(selectedSorteoId);
     } catch (error) {
@@ -126,6 +137,7 @@ const ManageResultados = () => {
     }
 
     try {
+        // Usamos endpoint: PUT /resultados/{sorteo_id}/{premio_id}?numeros_nuevos=...
         await axios.put(`${API_URL}/resultados/${selectedSorteoId}/${premio.id}?numeros_nuevos=${editValue}`);
         setEditingPremioId(null);
         loadSorteoData(selectedSorteoId);
@@ -135,19 +147,13 @@ const ManageResultados = () => {
   };
 
   // --- UTILIDAD DE FORMATO VISUAL ---
-  const renderNumeroFormateado = (numero, totalBalotas) => {
+  const renderNumeroFormateado = (numero) => {
     if (!numero) return "";
-    
-    // Si tiene más de 4 cifras, asumimos que las ultimas 3 son serie (o lógica 4 cifras + serie)
-    // Ejemplo: 1234567 -> 1234 (Numero) 567 (Serie)
-    // Ajusta esta lógica según tu regla de negocio exacta.
-    
     let principal = numero;
     let serie = "";
 
-    // Si es un premio mayor (generalmente más de 4 cifras incluyendo serie)
     if (numero.length > 4) {
-        const corte = numero.length - 3; // Dejar 3 para la serie
+        const corte = numero.length - 3; 
         principal = numero.substring(0, corte);
         serie = numero.substring(corte);
     }
@@ -178,7 +184,7 @@ const ManageResultados = () => {
           <option value="">-- Seleccione Sorteo --</option>
           {sorteos.map(s => (
             <option key={s.id} value={s.id}>
-              No. {s.numero_sorteo} ({s.fecha})
+              No. {s.numero_sorteo} ({formatearFechaCO(s.fecha)})
             </option>
           ))}
         </select>
@@ -215,36 +221,31 @@ const ManageResultados = () => {
                     )}
                   </td>
                   
-                  {/* COLUMNA DE RESULTADO / INPUT */}
                   <td>
                     {isEditing ? (
-                        // MODO EDICIÓN
                         <input 
                             type="text"
                             className="form-input input-editing"
                             autoFocus
-                            maxLength={premio.cantidad_balotas+1}
+                            maxLength={premio.cantidad_balotas}
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
                         />
                     ) : premio.yaJugado ? (
-                        // MODO VISUALIZACIÓN
-                        renderNumeroFormateado(premio.numeroGanador, premio.cantidad_balotas)
+                        renderNumeroFormateado(premio.numeroGanador)
                     ) : (
-                        // MODO NUEVO INGRESO
                         <input 
                             type="text"
                             className="form-input"
                             style={{textAlign: 'center', letterSpacing: '5px'}}
-                            maxLength={premio.cantidad_balotas+1}
-                            placeholder={"???????"}
+                            maxLength={premio.cantidad_balotas}
+                            placeholder={"?".repeat(premio.cantidad_balotas)}
                             value={currentInput[premio.id] || ''}
                             onChange={(e) => handleInputChange(premio.id, e.target.value)}
                         />
                     )}
                   </td>
 
-                  {/* COLUMNA DE ACCIONES */}
                   <td>
                     {isEditing ? (
                         <div className="action-buttons">

@@ -161,6 +161,18 @@ const TVPage = () => {
     }
   };
 
+  // FUNCIÓN AUXILIAR: Formatear fecha sin alterar zona horaria
+  const formatearFechaCO = (fechaStr) => {
+    if (!fechaStr || fechaStr === '---') return '---';
+    // Crear fecha asumiendo que el string ya es la hora local (agregando T00:00)
+    // Esto evita la conversión a UTC que resta un día.
+    const fecha = new Date(`${fechaStr}T00:00:00`); 
+    return fecha.toLocaleDateString('es-CO', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
 
   return (
     <div className="tv-container">
@@ -176,7 +188,7 @@ const TVPage = () => {
             <span className="sorteo-label">SORTEO</span>
             <span className="sorteo-number">{config.numero_sorteo}</span>
             <div className="sorteo-date">
-              {new Date(config.fecha).toLocaleDateString('es-CO', { dateStyle: 'long' })}
+              {formatearFechaCO(config.fecha)}
             </div>
           </div>
         </div>
