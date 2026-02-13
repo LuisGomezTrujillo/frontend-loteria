@@ -227,7 +227,7 @@ const ManageResultados = () => {
                             type="text"
                             className="form-input input-editing"
                             autoFocus
-                            maxLength={premio.cantidad_balotas}
+                            maxLength={premio.cantidad_balotas+1}
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
                         />
