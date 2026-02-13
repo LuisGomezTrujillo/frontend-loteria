@@ -17,15 +17,15 @@ const ResultadosPage = () => {
 
   // CONFIGURACIÓN DE SLIDES
   const SLIDES_CONFIG = [
-    { id: 0, header: "40 MILLONES", rango: [41, 50], type: 'lista' },
-    { id: 1, header: "50 MILLONES", rango: [31, 40], type: 'lista' },
-    { id: 2, header: "60 MILLONES", rango: [21, 30], type: 'lista' },
-    { id: 3, header: "80 MILLONES", rango: [11, 20], type: 'lista' },
-    { id: 4, header: "100 MILLONES", rango: [6, 10], type: 'lista' },
-    { id: 5, header: "200 MILLONES", rango: [3, 5], type: 'lista' },
-    { id: 6, header: "300 MILLONES", rango: [1, 2], type: 'lista' },
-    { id: 7, header: "PREMIO MAYOR", type: 'mayor' },
-    { id: 8, header: "GANA SIEMPRE", type: 'gana_siempre' }
+    { id: 0, header: "$ 40 MILLONES", rango: [41, 50], type: 'lista' },
+    { id: 1, header: "$ 50 MILLONES", rango: [31, 40], type: 'lista' },
+    { id: 2, header: "$ 60 MILLONES", rango: [21, 30], type: 'lista' },
+    { id: 3, header: "$ 80 MILLONES", rango: [11, 20], type: 'lista' },
+    { id: 4, header: "$ 100 MILLONES", rango: [6, 10], type: 'lista' },
+    { id: 5, header: "$ 200 MILLONES", rango: [3, 5], type: 'lista' },
+    { id: 6, header: "$ 300 MILLONES", rango: [1, 2], type: 'lista' },
+    { id: 7, header: "$ 2.600 MILLONES", type: 'mayor' },
+    { id: 8, header: "$ 1 MILLON 500 MIL", type: 'gana_siempre' }
   ];
 
   const UPDATE_INTERVAL_MS = 15000;
@@ -161,9 +161,9 @@ const ResultadosPage = () => {
           {/* MAYOR */}
           {content.type === 'mayor' && (
             <div className="card-huge mayor-theme">
-              <div className="card-header-huge">¡PREMIO MAYOR!</div>
+              <div className="card-header-huge">{ "$ 2.600 MILLONES"}</div>
               <div className="card-body-huge">
-                <div className="value-huge">{content.data?.valor}</div>
+                <div className="value-huge">{content.data?.titulo}</div>
                 <div className="number-wrapper-huge">
                     {renderNumero(content.data?.numero, content.data?.balotas, true)}
                 </div>
@@ -173,11 +173,11 @@ const ResultadosPage = () => {
 
           {/* GANA SIEMPRE */}
           {content.type === 'gana_siempre' && (
-            <div className="card-huge gana-theme">
-              <div className="card-header-huge">{content.data?.titulo || "GANA SIEMPRE"}</div>
-              <div className="card-body-huge">
-                <div className="value-huge">{content.data?.valor}</div>
-                <div className="number-wrapper-huge">
+            <div className="card-list">
+              <div className="card-header-list">{"$ 1,5 MILLONES"}</div>
+              <div className="card-body-list">
+                <div className="td-label">{content.header}</div>
+                <div className="td-number">
                     {renderNumero(content.data?.numero, content.data?.balotas, true)}
                 </div>
               </div>
@@ -212,7 +212,7 @@ const ResultadosPage = () => {
         {/* FOOTER */}
         <footer className="footer-controls">
             <div className="footer-info left">
-                Act: {lastUpdate.toLocaleTimeString()}
+                Actualizado a las: {lastUpdate.toLocaleTimeString()}
             </div>
 
             <div className="footer-nav">
@@ -229,7 +229,7 @@ const ResultadosPage = () => {
             </div>
 
             <div className="footer-info right">
-                Siguiente en: {timeRemaining}s
+                Siguiente actualización en: {timeRemaining}s
             </div>
         </footer>
 
