@@ -375,195 +375,313 @@ body, html {
   font-weight: bold;
 }
 
+/* --- VARIABLES GLOBALES --- */
+:root {
+  --color-fondo: #0a1a4a;
+  --color-oro: #d4af37;
+  --color-oro-brillo: #f9e38d;
+  --color-verde: #28a745;
+  --color-rojo: #dc3545;
+  --bg-gradient: radial-gradient(circle at center, #1b3b80 0%, var(--color-fondo) 100%);
+}
+
+
+
 /* =========================================
-   PÁGINA PÚBLICA DE RESULTADOS (TABLERO)
+   LAYOUT PRINCIPAL
    ========================================= */
 
-.resultados-container {
-  min-height: 100vh;
+.layout-split {
+  display: flex;
   width: 100vw;
-  background: radial-gradient(circle at center, #1b3b80 0%, #0a1a4a 100%);
+  height: 100vh;
+}
+
+/* --- COLUMNA IZQUIERDA (SIDEBAR NARROW) --- */
+.sidebar-brand {
+  flex: 0 0 20%; /* Ancho fijo 20% */
+  background: rgba(0, 0, 0, 0.2);
+  border-right: 2px solid rgba(212, 175, 55, 0.3);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
   box-sizing: border-box;
-  font-family: 'Helvetica', 'Arial', sans-serif;
-  overflow-y: auto; /* Permite scroll si hay muchos premios */
+  gap: 3vh; /* Espacio reducido entre elementos */
 }
 
-/* Header */
-.res-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px solid var(--color-oro);
-  padding-bottom: 15px;
-  margin-bottom: 20px;
-}
-
-.res-logo-area { display: flex; align-items: center; height: 80px; }
-.res-logo-img { height: 100%; animation: spin 10s infinite linear; }
-.res-logo-text { height: 60%; margin-left: 15px; }
-
-.res-title-area { text-align: right; color: white; }
-.res-title-area h1 { margin: 0; font-size: 2.5rem; color: var(--color-oro); letter-spacing: 2px; }
-.res-title-area h2 { margin: 5px 0 0 0; font-size: 1.5rem; color: #ccc; font-weight: normal; }
-
-/* Grid Principal */
-.res-grid {
-  display: grid;
-  /* Intenta crear columnas de mínimo 300px, llenando el espacio */
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-  gap: 20px;
-  flex: 1;
-}
-
-/* Tarjeta de Grupo de Premios */
-.res-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  overflow: hidden;
+.brand-header {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
-.res-card-header {
-  background: linear-gradient(90deg, #d4af37 0%, #f9e38d 50%, #d4af37 100%);
-  color: #0a1a4a;
-  font-weight: bold;
-  font-size: 1.4rem;
+.logo-3d-small {
+  height: 16vh; /* Un poco más pequeño */
+  object-fit: contain;
+  animation: spin 8s infinite linear;
+  margin-bottom: 2vh;
+}
+
+.logo-text-small {
+  width: 10vw; /* Más angosto */
+  object-fit: contain;
+}
+
+.draw-info {
   text-align: center;
-  padding: 8px;
-  text-transform: uppercase;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2vh 1vw;
+  border-radius: 15px;
+  width: 90%;
 }
 
-.res-card-body {
-  padding: 10px;
+.draw-label {
+  color: var(--color-oro);
+  font-size: 1.8vh;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.draw-number {
+  font-size: 5vh;
+  font-weight: 900;
+  color: white;
+  margin: 1vh 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.draw-date {
+  font-size: 1.6vh;
+  color: #ccc;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  padding-top: 1vh;
+  text-transform: capitalize;
+}
+
+/* --- COLUMNA DERECHA (MAIN) --- */
+.main-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 3vh 3vw 0 3vw; 
 }
 
-/* Tabla interna de la tarjeta */
-.res-table {
+/* AREA DEL SLIDER */
+.slider-area {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 80px; /* Espacio para footer */
+}
+
+/* =========================================
+   TARJETAS (ESTILOS COMPARTIDOS)
+   ========================================= */
+
+.card-list, .card-huge {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* --- TIPO 1: LISTAS (SECOS) COMPACTAS --- */
+.card-list {
+  max-width: 95%; /* Usar casi todo el ancho disponible */
+}
+
+.card-header-list {
+  /* GRADIENTE DORADO ORIGINAL */
+  background: linear-gradient(90deg, #d4af37 0%, #f9e38d 50%, #d4af37 100%);
+  color: #0a1a4a; /* Azul oscuro para contraste */
+  font-size: 3.5vh;
+  font-weight: 900;
+  text-align: center;
+  padding: 1vh;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.table-prizes {
   width: 100%;
   border-collapse: collapse;
 }
 
-.res-table td {
-  padding: 6px 4px;
+.table-prizes tr {
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
-.col-premio {
-  color: #ccc;
-  font-size: 1.1rem;
-  width: 45%;
+/* Celdas Compactas para evitar Scroll */
+.td-label {
+  padding: 0.5vh 2vh; /* Padding vertical muy reducido */
+  font-size: 2.2vh;   /* Fuente ligeramente reducida */
+  color: #ddd;
+  font-weight: bold;
   text-transform: uppercase;
-  font-weight: bold;
+  width: 45%;
 }
 
-.col-numero {
+.td-number {
+  padding: 0.5vh 3vh;
   text-align: right;
-  font-family: 'Courier New', monospace;
-  font-size: 1.4rem;
-  font-weight: bold;
 }
 
-/* Estilos de Números */
-.num-ganador { color: white; letter-spacing: 1px; }
-.num-serie { color: var(--color-oro); margin-left: 5px; font-size: 1.7rem; }
-.num-placeholder { color: #444; letter-spacing: 3px; }
-
-/* Estilo Especial para el PREMIO MAYOR */
-.card-mayor {
-  grid-column: 1 / -1; /* Ocupa todo el ancho si el grid lo permite */
-  border: 2px solid var(--color-oro);
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
-  background: rgba(10, 26, 74, 0.8);
+/* --- TIPO 2: PREMIO MAYOR (GIGANTE) --- */
+.mayor-theme {
+  border: 4px solid var(--color-oro);
+  box-shadow: 0 0 60px rgba(212, 175, 55, 0.3);
+  transform: scale(1.02);
 }
 
-.card-mayor .res-card-header {
-  font-size: 2rem;
-  padding: 15px;
-  background: var(--color-oro);
-}
-
-.card-mayor .mayor-amount {
-  text-align: center;
-  font-size: 3rem;
-  color: white;
+.card-header-huge {
+  /* GRADIENTE DORADO ORIGINAL */
+  background: linear-gradient(90deg, #d4af37 0%, #f9e38d 50%, #d4af37 100%);
+  color: #0a1a4a;
+  font-size: 5vh;
   font-weight: 900;
-  text-shadow: 0 0 10px var(--color-oro);
-  margin-bottom: 10px;
+  text-align: center;
+  padding: 2vh;
+  text-transform: uppercase;
 }
 
-.card-mayor .col-premio { font-size: 1.5rem; text-align: center; width: 100%; display: block;}
-.card-mayor .col-numero { font-size: 4rem; text-align: center; display: block; width: 100%;}
-.card-mayor .num-serie { font-size: 3rem; }
-
-/* Footer */
-.res-footer {
-  text-align: right;
-  color: #666;
-  font-size: 0.9rem;
-  margin-top: 10px;
-  border-top: 1px solid #333;
-  padding-top: 5px;
-}
-
-/* Modificación al contenedor principal para SmartTV */
-.resultados-container {
-  min-height: 100vh;
-  width: 100vw;
-  background: radial-gradient(circle at center, #1b3b80 0%, #0a1a4a 100%);
+.card-body-huge {
+  padding: 2vh;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  /* Eliminamos el padding de aquí y lo pasamos al safe-area */
-  padding: 0; 
-  margin: 0;
-  overflow: hidden; /* Evita scrolls accidentales en TV */
+  justify-content: center;
+  min-height: 50vh; /* Asegura altura en pantallas grandes */
 }
 
-/* Contenedor de Margen Seguro (Overscan Protection) */
-.res-safe-area {
-  flex: 1;
+.value-huge {
+  font-size: 8vh; /* Valor muy grande */
+  color: var(--color-oro);
+  font-weight: bold;
+  margin-bottom: 2vh;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+/* --- TIPO 3: GANA SIEMPRE --- */
+.gana-theme {
+  border: 3px solid var(--color-verde);
+  box-shadow: 0 0 30px rgba(40, 167, 69, 0.3);
+}
+.gana-theme .card-header-huge {
+  background: var(--color-verde);
+  color: white;
+}
+.gana-theme .value-huge {
+  color: var(--color-verde);
+}
+
+/* =========================================
+   TIPOGRAFÍA DE NÚMEROS
+   ========================================= */
+
+.numero-container {
   display: flex;
-  flex-direction: column;
-  /* Margen del 5% es el estándar para TVs antiguas */
-  margin: 5vh 5vw; 
+  align-items: baseline;
+}
+
+.list-layout {
+  justify-content: flex-end; /* A la derecha en tablas */
+}
+
+.huge-layout {
+  justify-content: center; /* Centrado en Mayor/Gana */
+  gap: 20px;
+}
+
+/* Estilos Específicos para Listas (Compactos) */
+.list-layout .num-principal, 
+.list-layout .num-serie {
+  font-family: 'Courier New', monospace;
+  font-weight: 900;
+  font-size: 4.5vh; /* Ajustado para que quepan 10 filas */
+  letter-spacing: -2px;
+}
+.list-layout .num-principal { margin-right: 15px; color: white; }
+.list-layout .num-serie { color: var(--color-oro); }
+
+
+/* Estilos Específicos para Mayor/Gana (Gigantes) */
+.huge-layout .num-principal,
+.huge-layout .num-serie {
+  font-family: 'Courier New', monospace;
+  font-weight: 900;
+  font-size: 14vh; /* GIGANTE */
+  letter-spacing: -5px;
+}
+.huge-layout .num-principal { color: white; }
+.huge-layout .num-serie { color: var(--color-oro); }
+
+/* Placeholder */
+.num-placeholder { color: #444; letter-spacing: 5px; font-size: 4vh; }
+
+/* =========================================
+   FOOTER (CONTROLES)
+   ========================================= */
+
+.footer-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px; /* Altura fija */
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2vw;
   box-sizing: border-box;
-  /* Opcional: una línea muy tenue para debuguear el área */
-  /* border: 1px solid rgba(255,255,255,0.05); */
 }
 
-/* Ajuste del Grid para que no se amontone en pantallas 1080p */
-.res-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-  gap: 1.5vw;
-  flex: 1;
-  align-content: start;
+.footer-info {
+  font-size: 1.8vh;
+  color: #999;
+  width: 20%;
+}
+.footer-info.right { text-align: right; }
+
+.footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
 }
 
-/* Optimizamos los textos para que sean legibles desde lejos (el sofá) */
-.res-card-header {
-  font-size: 1.8rem; /* Un poco más grande para TV */
-  padding: 10px;
+.nav-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  border-radius: 50%;
+  width: 5vh;
+  height: 5vh;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.nav-btn:hover { background: var(--color-oro); border-color: var(--color-oro); color: #000; }
+
+.nav-dots { display: flex; gap: 0.8vw; }
+.dot {
+  width: 1.2vh; height: 1.2vh;
+  background: #555;
+  border-radius: 50%;
+  transition: all 0.3s;
+}
+.dot.active {
+  background: var(--color-oro);
+  transform: scale(1.4);
+  box-shadow: 0 0 10px var(--color-oro);
 }
 
-.col-premio {
-  font-size: 1.3rem;
-}
-
-.col-numero {
-  font-size: 1.8rem;
-}
-
-/* Si la TV es 4K o muy grande, escalamos todo el contenido */
-@media (min-width: 2000px) {
-  .res-safe-area {
-    font-size: 1.5rem;
-  }
-  .res-title-area h1 { font-size: 4rem; }
-}
+/* Animaciones */
+@keyframes spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

@@ -10,8 +10,7 @@ const TVPage = () => {
   const [config, setConfig] = useState({ id: null, numero_sorteo: '---', fecha: '---' });
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Mantenemos el array de 6 para no romper la estructura, 
-  // pero solo usaremos los que el premio indique.
+  // Mantenemos el array de 6 para no romper la estructura visual
   const [inputValues, setInputValues] = useState(Array(6).fill(""));
   const [isFocusEnabled, setIsFocusEnabled] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle');
@@ -19,10 +18,16 @@ const TVPage = () => {
   const inputRefs = useRef([]);
 
   const currentPrize = plan[currentIndex];
-  // Determinar cuántas balotas mostrar (4 o 6) basado en el backend
+  
+  // 1. Determinar número de BALOTAS (Inputs visuales)
   const numInputs = currentPrize ? parseInt(currentPrize.cantidad_balotas) : 6;
 
-  // --- 1. CARGA DE DATOS ---
+  // 2. Determinar número de CIFRAS (Validación de datos)
+  // Si son 6 balotas, la quinta tiene 2 dígitos -> Total 7 cifras.
+  // Si son 4 balotas, todas tienen 1 dígito -> Total 4 cifras.
+  const numeroCifras = numInputs === 6 ? 7 : 4;
+
+  // --- CARGA DE DATOS ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -41,12 +46,23 @@ const TVPage = () => {
     fetchData();
   }, []);
 
-  // --- 2. ENVIAR AL BACKEND (Envuelto en useCallback para evitar advertencias) ---
+  // --- ENVIAR AL BACKEND ---
   const saveResult = useCallback(async () => {
     if (!config.id || !currentPrize) return;
 
-    // Solo concatenamos los valores que están visibles en pantalla
+    // Concatenamos los valores visibles
     const rawResult = inputValues.slice(0, numInputs).join('');
+
+    // --- NUEVA VALIDACIÓN ---
+    // Verificamos que la longitud de la cadena coincida con el número de CIFRAS esperado
+    if (rawResult.length !== numeroCifras) {
+      console.warn(`Validación fallida: Se esperaban ${numeroCifras} cifras, pero se obtuvieron ${rawResult.length}.`);
+      setSaveStatus('error'); 
+      // Nota: Si deseas bloquear el envío cuando faltan números, agrega un 'return' aquí.
+      // Por ahora solo marcamos error visual y logueamos, pero intentamos el envío si así se desea,
+      // o puedes descomentar la siguiente línea para ser estricto:
+      // return; 
+    }
 
     const payload = {
       sorteo_id: config.id,
@@ -57,14 +73,14 @@ const TVPage = () => {
     try {
       await axios.post(`${API_URL}/resultados/`, payload);
       setSaveStatus('success');
-      console.log("Resultado guardado:", rawResult);
+      console.log(`Resultado guardado: ${rawResult} (${numeroCifras} cifras)`);
     } catch (error) {
       console.error("Error al guardar.", error);
       setSaveStatus('error');
     }
-  }, [config.id, currentPrize, inputValues, numInputs]);
+  }, [config.id, currentPrize, inputValues, numInputs, numeroCifras]);
 
-  // --- 3. MANEJO DE TECLADO GLOBAL ---
+  // --- MANEJO DE TECLADO GLOBAL ---
   useEffect(() => {
     const handleGlobalKeyDown = (e) => {
       const key = e.key.toLowerCase();
@@ -99,9 +115,9 @@ const TVPage = () => {
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [currentIndex, plan, saveResult]); // Dependencias limpias
+  }, [currentIndex, plan, saveResult]);
 
-  // --- 4. FOCUS AUTOMÁTICO ---
+  // --- FOCUS AUTOMÁTICO ---
   useEffect(() => {
     if (isFocusEnabled && inputRefs.current[0]) {
       inputRefs.current[0].focus();
@@ -110,7 +126,7 @@ const TVPage = () => {
     }
   }, [isFocusEnabled, currentIndex]);
 
-  // --- 5. EFECTO PARA PASAR AL SIGUIENTE PREMIO AUTOMÁTICAMENTE ---
+  // --- EFECTO PARA PASAR AL SIGUIENTE PREMIO AUTOMÁTICAMENTE ---
   useEffect(() => {
     if (saveStatus === 'success') {
       const timer = setTimeout(() => {
@@ -126,18 +142,30 @@ const TVPage = () => {
     }
   }, [saveStatus, currentIndex, plan.length]);
 
-  // --- 6. LÓGICA DE INPUTS (BALOTAS) ---
+  // --- LÓGICA DE INPUTS (BALOTAS) REESCRITA ---
+  
+  // Función auxiliar para determinar longitud máxima por input según reglas
+  const getMaxLength = (index) => {
+    // Si estamos en modo 6 balotas y es el índice 4 (la quinta balota), permite 2 dígitos.
+    if (numInputs === 6 && index === 4) {
+      return 2;
+    }
+    // Para cualquier otro caso, 1 dígito.
+    return 1;
+  };
+
   const handleChange = (e, index) => {
     const val = e.target.value;
-    const isFifthBall = numInputs === 6 && index === 4;
-    const maxLength = isFifthBall ? 2 : 1;
+    const allowedLength = getMaxLength(index);
 
-    if (/^\d*$/.test(val) && val.length <= maxLength) {
+    // Validación Regex: solo números y longitud correcta
+    if (/^\d*$/.test(val) && val.length <= allowedLength) {
       const newValues = [...inputValues];
       newValues[index] = val;
       setInputValues(newValues);
 
-      if (val.length === maxLength && index < numInputs - 1) {
+      // Auto-focus al siguiente input si se llenó la capacidad de la balota actual
+      if (val.length === allowedLength && index < numInputs - 1) {
         inputRefs.current[index + 1].focus();
       }
     }
@@ -161,11 +189,9 @@ const TVPage = () => {
     }
   };
 
-  // FUNCIÓN AUXILIAR: Formatear fecha sin alterar zona horaria
+  // FUNCIÓN AUXILIAR: Formatear fecha
   const formatearFechaCO = (fechaStr) => {
     if (!fechaStr || fechaStr === '---') return '---';
-    // Crear fecha asumiendo que el string ya es la hora local (agregando T00:00)
-    // Esto evita la conversión a UTC que resta un día.
     const fecha = new Date(`${fechaStr}T00:00:00`); 
     return fecha.toLocaleDateString('es-CO', { 
       year: 'numeric', 
@@ -198,6 +224,7 @@ const TVPage = () => {
         <div className="inputs-container">
           {inputValues.slice(0, numInputs).map((val, index) => (
             <React.Fragment key={index}>
+              {/* Spacer visual antes de la quinta balota solo si hay 6 balotas */}
               {numInputs === 6 && index === 4 && <div className="spacer-serie" />}
               <input
                 ref={el => inputRefs.current[index] = el}
@@ -205,6 +232,7 @@ const TVPage = () => {
                 inputMode="numeric"
                 className="balota-esferica"
                 style={{
+                  // Ajuste de fuente dinámico basado en si tiene 2 cifras o 1
                   fontSize: (numInputs === 6 && index === 4 && val.length > 1) ? '6vh' : '9vh',
                   cursor: isFocusEnabled ? 'text' : 'default'
                 }}
@@ -238,4 +266,3 @@ const TVPage = () => {
 };
 
 export default TVPage;
-
