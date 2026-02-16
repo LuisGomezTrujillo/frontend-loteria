@@ -26,6 +26,9 @@ const ResultadosPage = () => {
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [currentSlide, setCurrentSlide] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(UPDATE_INTERVAL_MS / 1000);
+  
+  // NUEVO ESTADO: Para el temporizador visual del slider
+  const [slideTimeRemaining, setSlideTimeRemaining] = useState(null);
 
   // --- FETCH DATA ---
   const fetchData = useCallback(async () => {
@@ -104,13 +107,13 @@ const ResultadosPage = () => {
   // --- HANDLERS ---
   const handleNext = useCallback(() => {
     setCurrentSlide(prev => (prev < SLIDES_CONFIG.length - 1 ? prev + 1 : 0));
-  }, []); // Dependencia vacía porque SLIDES_CONFIG es externa
+  }, []); 
 
   const handlePrev = useCallback(() => {
     setCurrentSlide(prev => (prev > 0 ? prev - 1 : SLIDES_CONFIG.length - 1));
   }, []);
 
-  // --- AUTO-SLIDE LOGIC ---
+  // --- AUTO-SLIDE LOGIC (ACTUALIZADA PARA EL TEMPORIZADOR VISUAL) ---
   useEffect(() => {
     const content = getSlideContent();
     let isComplete = false;
@@ -121,14 +124,23 @@ const ResultadosPage = () => {
       isComplete = content.data != null && content.data.numero != null && content.data.numero !== '';
     }
 
-    let slideTimer;
+    let slideInterval;
     if (isComplete) {
-      slideTimer = setTimeout(() => {
-        handleNext();
-      }, AUTO_SLIDE_DELAY_MS);
+      setSlideTimeRemaining(AUTO_SLIDE_DELAY_MS / 1000); // Inicializa los segundos (ej: 5s)
+      slideInterval = setInterval(() => {
+        setSlideTimeRemaining(prev => {
+          if (prev <= 1) {
+            handleNext();
+            return AUTO_SLIDE_DELAY_MS / 1000;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      setSlideTimeRemaining(null); // Oculta o pausa el temporizador si faltan resultados
     }
 
-    return () => { if (slideTimer) clearTimeout(slideTimer); };
+    return () => { if (slideInterval) clearInterval(slideInterval); };
   }, [getSlideContent, handleNext]);
 
   // --- HELPERS DE RENDER ---
@@ -231,10 +243,13 @@ const ResultadosPage = () => {
           )}
         </div>
 
+        {/* --- FOOTER ACTUALIZADO --- */}
         <footer className="footer-controls">
-          <div className="footer-info left">
-            Actualizado: {lastUpdate.toLocaleTimeString()}
+          <div className="footer-info left" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span>Actualizado: {lastUpdate.toLocaleTimeString()}</span>
+            <span>Actualización de datos en: {timeRemaining}s</span>
           </div>
+          
           <div className="footer-nav">
             <button className="nav-btn" onClick={handlePrev}>◀</button>
             <div className="nav-dots">
@@ -244,8 +259,11 @@ const ResultadosPage = () => {
             </div>
             <button className="nav-btn" onClick={handleNext}>▶</button>
           </div>
+          
           <div className="footer-info right">
-            Siguiente en: {timeRemaining}s
+            {slideTimeRemaining !== null 
+              ? `Cambio de slide en: ${slideTimeRemaining}s` 
+              : 'Esperando números...'}
           </div>
         </footer>
       </main>
