@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import API_URL from '../config';
 
 const ManagePlan = () => {
-  const navigate = useNavigate();
+  
   
   // Estados para CRUD de Planes
   const [planes, setPlanes] = useState([]);
