@@ -570,15 +570,15 @@ body, html {
 
 /* --- TIPO 3: GANA SIEMPRE --- */
 .gana-theme {
-  border: 3px solid var(--color-verde);
-  box-shadow: 0 0 30px rgba(40, 167, 69, 0.3);
+  border: 3px solid #ddd;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
 }
 .gana-theme .card-header-huge {
-  background: var(--color-verde);
+  background: #ddd;
   color: white;
 }
 .gana-theme .value-huge {
-  color: var(--color-verde);
+  color: #ddd;
 }
 
 /* =========================================

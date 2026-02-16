@@ -186,8 +186,8 @@ const ResultadosPage = () => {
           )}
 
           {content.type === 'gana_siempre' && (
-            <div className="card-list card-list-verde">
-              <div className="card-header-list" style={{background: 'var(--color-verde)', color:'white'}}>
+            <div className="card-list card-list">
+              <div className="card-header-list" >
                   {"$ 1 MILLON 500 MIL"}
               </div>
               <div className="card-body-list single-item-centered">
