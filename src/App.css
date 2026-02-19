@@ -399,7 +399,7 @@ body, html {
 
 /* --- COLUMNA IZQUIERDA (SIDEBAR NARROW) --- */
 .sidebar-brand {
-  flex: 0 0 40%; /* Ancho fijo 40% */
+  flex: 0 0 20%; /* Ancho fijo 40% */
   background: rgba(0, 0, 0, 0.2);
   border-right: 2px solid rgba(212, 175, 55, 0.3);
   display: flex;
@@ -420,12 +420,12 @@ body, html {
 .logo-3d-small {
   height: 35vh; /* Un poco más pequeño */
   object-fit: contain;
-  animation: spin 8s infinite linear;
+  animation: spin 6s infinite linear;
   margin-bottom: 2vh;
 }
 
 .logo-text-small {
-  width: 20vw; /* Más angosto */
+  width: 15vw; /* Más angosto */
   object-fit: contain;
 }
 
@@ -483,7 +483,7 @@ body, html {
    ========================================= */
 
 .card-list, .card-huge {
-  width: 100%;
+  width: 60%;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
@@ -494,7 +494,7 @@ body, html {
 
 /* --- TIPO 1: LISTAS (SECOS) COMPACTAS --- */
 .card-list {
-  max-width: 95%; /* Usar casi todo el ancho disponible */
+  max-width: 90%; /* Usar casi todo el ancho disponible */
 }
 
 .card-header-list {
@@ -521,15 +521,16 @@ body, html {
 /* Celdas Compactas para evitar Scroll */
 .td-label {
   padding: 0.5vh 2vh; /* Padding vertical muy reducido */
-  font-size: 4vh;   /* Fuente ligeramente reducida */
+  font-size: 5vh;   /* Fuente ligeramente reducida */
+  text-align: left;
   color: #ddd;
   font-weight: bold;
   text-transform: uppercase;
-  width: 45%;
+  width: 50%;
 }
 
 .td-number {
-  padding: 0.5vh 3vh;
+  padding: 0.5vh 10vh;
   text-align: right;
 }
 
@@ -591,7 +592,7 @@ body, html {
 }
 
 .list-layout {
-  justify-content: flex-end; /* A la derecha en tablas */
+  justify-content: flex-start; /* A la derecha en tablas */
 }
 
 .huge-layout {
@@ -604,7 +605,7 @@ body, html {
 .list-layout .num-serie {
   font-family: 'Courier New', monospace;
   font-weight: 900;
-  font-size: 5vh; /* Ajustado para que quepan 10 filas */
+  font-size: 6vh; /* Ajustado para que quepan 10 filas */
   letter-spacing: -2px;
 }
 .list-layout .num-principal { margin-right: 15px; color: white; }
