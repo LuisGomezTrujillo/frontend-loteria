@@ -521,7 +521,7 @@ body, html {
 /* Celdas Compactas para evitar Scroll */
 .td-label {
   padding: 0.5vh 2vh; /* Padding vertical muy reducido */
-  font-size: 5vh;   /* Fuente ligeramente reducida */
+  font-size: 3vh;   /* Fuente ligeramente reducida */
   text-align: left;
   color: #ddd;
   font-weight: bold;
@@ -605,7 +605,7 @@ body, html {
 .list-layout .num-serie {
   font-family: 'Courier New', monospace;
   font-weight: 900;
-  font-size: 4vh; /* Ajustado para que quepan 10 filas */
+  font-size: 6vh; /* Ajustado para que quepan 10 filas */
   letter-spacing: -2px;
 }
 .list-layout .num-principal { margin-right: 15px; color: white; }
