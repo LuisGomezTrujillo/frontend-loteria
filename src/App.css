@@ -521,7 +521,7 @@ body, html {
 /* Celdas Compactas para evitar Scroll */
 .td-label {
   padding: 0.5vh 2vh; /* Padding vertical muy reducido */
-  font-size: 5vh;   /* Fuente ligeramente reducida */
+  font-size: 3vh;   /* Fuente ligeramente reducida */
   text-align: left;
   color: #ddd;
   font-weight: bold;
