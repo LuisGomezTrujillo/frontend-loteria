@@ -3,6 +3,16 @@ import axios from 'axios';
 import API_URL from '../config';
 
 const ManageResultados = () => {
+  // premio.cantidad_balotas representa el NÚMERO DE BALOTAS (bolas físicas),
+  // no la cantidad de dígitos del input. Mapeo:
+  //  - 4 balotas -> GANA SIEMPRE: 4 dígitos totales, SIN serie
+  //  - 6 balotas -> SECO/otros: 4 dígitos de número + 3 dígitos de serie
+  //                 (5ta balota = 2 dígitos, 6ta balota = 1 dígito) = 7 dígitos totales
+  const getLongitudTotal = (premio) => {
+    if (premio.cantidad_balotas === 6) return 7; // 4 número + 3 serie
+    return premio.cantidad_balotas; // ej. 4 balotas = 4 dígitos, sin serie
+  };
+
   const [sorteos, setSorteos] = useState([]);
   const [selectedSorteoId, setSelectedSorteoId] = useState('');
   
@@ -88,9 +98,10 @@ const ManageResultados = () => {
   const guardarResultado = async (premio) => {
     const numero = currentInput[premio.id];
     if (!numero) return alert("Ingrese un número");
-    
-    if (numero.length < premio.cantidad_balotas) {
-      return alert(`El premio requiere al menos ${premio.cantidad_balotas} cifras`);
+
+    const longitudTotal = getLongitudTotal(premio);
+    if (numero.length < longitudTotal) {
+      return alert(`El premio requiere ${longitudTotal} cifras`);
     }
 
     try {
@@ -132,8 +143,9 @@ const ManageResultados = () => {
   };
 
   const guardarEdicion = async (premio) => {
-    if (editValue.length < premio.cantidad_balotas) {
-        return alert(`El premio requiere al menos ${premio.cantidad_balotas} cifras`);
+    const longitudTotal = getLongitudTotal(premio);
+    if (editValue.length < longitudTotal) {
+        return alert(`El premio requiere ${longitudTotal} cifras`);
     }
 
     try {
@@ -227,7 +239,7 @@ const ManageResultados = () => {
                             type="text"
                             className="form-input input-editing"
                             autoFocus
-                            maxLength={premio.cantidad_balotas+1}
+                            maxLength={getLongitudTotal(premio)}
                             value={editValue}
                             onChange={(e) => setEditValue(e.target.value)}
                         />
@@ -238,8 +250,8 @@ const ManageResultados = () => {
                             type="text"
                             className="form-input"
                             style={{textAlign: 'center', letterSpacing: '5px'}}
-                            maxLength={premio.cantidad_balotas}
-                            placeholder={"?".repeat(premio.cantidad_balotas)}
+                            maxLength={getLongitudTotal(premio)}
+                            placeholder={"?".repeat(getLongitudTotal(premio))}
                             value={currentInput[premio.id] || ''}
                             onChange={(e) => handleInputChange(premio.id, e.target.value)}
                         />

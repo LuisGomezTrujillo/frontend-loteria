@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import logoMoneda from '../assets/logo.png';
 import textoLogo from '../assets/letras.png';
+import logoMZL from '../assets/logo-mzl-blanco.png';
 import API_URL from '../config';
 
 const TVPage = () => {
@@ -204,7 +205,21 @@ const TVPage = () => {
     <div className="tv-container">
       <header className="main-header">
         <div className="header-column">
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
+            <img
+              src={logoMZL}
+              className="logo-mzl-white"
+              alt="MZL Manizales del alma"
+              style={{ height: '26vh', width: 'auto' }}
+            />
+            <div
+              className="brand-divider"
+              style={{
+                width: '1px',
+                alignSelf: 'stretch',
+                backgroundColor: 'rgba(255,255,255,0.35)',
+              }}
+            />
             <img src={logoMoneda} className="coin-img-large" alt="Logo" />
             <img src={textoLogo} className="text-img-large" alt="Lotería" />
           </div>
