@@ -7,6 +7,13 @@
   --color-rojo: #dc3545;
   --balota-bg: radial-gradient(circle at 30% 30%, #ffffff 0%, #dcdcdc 50%, #808080 100%);
   --safe-margin: 3%;
+
+  /* Fuente única para TODOS los números del sistema (ResultadosPage y
+     TVPage): balotas, número principal, serie y placeholders. Solo deben
+     variar tamaño, color y sombra según el contexto; nunca la fuente. */
+  /* --fuente-numeros: 'Courier New', monospace; */
+  --fuente-numeros: 'Arial', monospace;
+  --peso-numeros: 500;
 }
 
 body, html {
@@ -58,7 +65,8 @@ body, html {
 .balota-esferica {
   width: 20vh; height: 20vh; border-radius: 50%; border: none; background: var(--balota-bg);
   box-shadow: inset -10px -10px 20px rgba(0,0,0,0.5), 10px 10px 30px rgba(0,0,0,0.4);
-  font-size: 9vh; font-weight: bold; text-align: center; color: #222; outline: none;
+  font-family: var(--fuente-numeros); font-size: 9vh; font-weight: var(--peso-numeros);
+  text-align: center; color: #222; outline: none;
   display: flex; justify-content: center; align-items: center; transition: transform 0.1s;
 }
 .balota-esferica:focus { transform: scale(1.05); box-shadow: 0 0 40px var(--color-oro-brillo); background: radial-gradient(circle at 30% 30%, #fff 0%, #fff8db 50%, #d4af37 100%); }
@@ -305,7 +313,7 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Courier New', monospace; /* Fuente monoespaciada para alinear números */
+  font-family: var(--fuente-numeros); /* Misma fuente que ResultadosPage y TVPage */
 }
 
 .result-main {
@@ -582,6 +590,16 @@ body, html {
   color: #ddd;
 }
 
+/* --- TIPO 4: PREMIO PROMOCIONAL --- */
+.promo-theme {
+  border: 3px solid var(--color-verde);
+  box-shadow: 0 0 30px rgba(40, 167, 69, 0.5);
+}
+.promo-theme .card-header-list {
+  background: linear-gradient(90deg, #1e7e34 0%, var(--color-verde) 50%, #1e7e34 100%);
+  color: white;
+}
+
 /* =========================================
    TIPOGRAFÍA DE NÚMEROS
    ========================================= */
@@ -603,8 +621,8 @@ body, html {
 /* Estilos Específicos para Listas (Compactos) */
 .list-layout .num-principal, 
 .list-layout .num-serie {
-  font-family: 'Courier New', monospace;
-  font-weight: 900;
+  font-family: var(--fuente-numeros);
+  font-weight: var(--peso-numeros);
   font-size: 6vh; /* Ajustado para que quepan 10 filas */
   letter-spacing: -2px;
 }
@@ -615,8 +633,8 @@ body, html {
 /* Estilos Específicos para Mayor/Gana (Gigantes) */
 .huge-layout .num-principal,
 .huge-layout .num-serie {
-  font-family: 'Courier New', monospace;
-  font-weight: 900;
+  font-family: var(--fuente-numeros);
+  font-weight: var(--peso-numeros);
   font-size: 14vh; /* GIGANTE */
   letter-spacing: -5px;
 }
@@ -624,7 +642,7 @@ body, html {
 .huge-layout .num-serie { color: var(--color-oro); }
 
 /* Placeholder */
-.num-placeholder { color: #444; letter-spacing: 5px; font-size: 4vh; }
+.num-placeholder { font-family: var(--fuente-numeros); color: #444; letter-spacing: 5px; font-size: 4vh; }
 
 /* =========================================
    FOOTER (CONTROLES)
@@ -686,3 +704,89 @@ body, html {
 /* Animaciones */
 @keyframes spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* =========================================
+   PÁGINA: TUBOS POR URNA
+   ========================================= */
+
+.tubos-grid {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 40px 0;
+}
+
+.tubo-columna {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 25px 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 140px;
+}
+
+.tubo-columna.urna5 {
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.tubo-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #ccc;
+  text-transform: uppercase;
+}
+
+.tubo-columna.urna5 .tubo-label {
+  color: var(--color-oro);
+}
+
+.tubo-input {
+  width: 90px;
+  height: 90px;
+  text-align: center;
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #0a1a4a;
+  background: white;
+  border: 3px solid transparent;
+  border-radius: 12px;
+  outline: none;
+}
+
+.tubo-input:focus {
+  border-color: var(--color-oro);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.tubo-input.tubo-error {
+  border-color: var(--color-rojo);
+}
+
+.tubo-conjunto-preview {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--color-oro);
+  min-height: 1.4rem;
+}
+
+.tubo-error-text {
+  font-size: 0.9rem;
+  color: #ff8a8a;
+  min-height: 1.2rem;
+}
+
+.tubo-estado {
+  font-size: 1.1rem;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.tubo-estado.success { color: var(--color-verde); }
+.tubo-estado.error { color: var(--color-rojo); }
+.tubo-estado.idle { color: #999; }
