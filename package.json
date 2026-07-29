@@ -13,6 +13,8 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.13.0",
     "react-scripts": "5.0.1",
+    "react-speech-recognition": "^4.0.1",
+    "regenerator-runtime": "^0.14.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
