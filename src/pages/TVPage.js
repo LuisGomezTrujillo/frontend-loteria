@@ -4,8 +4,140 @@ import logoMoneda from '../assets/logo.png';
 import textoLogo from '../assets/letras.png';
 import logoMZL from '../assets/logo-mzl-blanco.png';
 import API_URL from '../config';
+import { useAuth } from '../context/AuthContext';
+
+// --- Widget de sesión discreto (esquina inferior derecha) ---
+// Mismo truco de opacidad que el NavMenu de App.js: invisible hasta que el
+// mouse pasa por encima. El operador lo usa para iniciar sesión SIN salir
+// de esta pantalla, porque esta pantalla es la que sale al aire.
+const SesionWidget = () => {
+  const { usuario, estaAutenticado, login, logout, cargando } = useAuth();
+  const [abierto, setAbierto] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [enviando, setEnviando] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setEnviando(true);
+    try {
+      await login(username, password);
+      setUsername('');
+      setPassword('');
+      setAbierto(false);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Usuario o contraseña incorrectos');
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    setAbierto(false);
+  };
+
+  if (cargando) return null;
+
+  return (
+    <div
+      onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; }}
+      onMouseLeave={(e) => { if (!abierto) e.currentTarget.style.opacity = 0.15; }}
+      style={{
+        position: 'fixed',
+        bottom: 10,
+        right: 10,
+        zIndex: 10000,
+        opacity: 0.15,
+        transition: 'opacity 0.3s ease',
+        fontFamily: 'sans-serif',
+      }}
+      // Evita que las teclas del formulario (z, q, w, s, flechas...) disparen
+      // los atajos globales de captura de TVPage mientras se escribe aquí.
+      onKeyDown={(e) => e.stopPropagation()}
+    >
+      {!abierto ? (
+        <button
+          type="button"
+          onClick={() => setAbierto(true)}
+          title={estaAutenticado ? `Sesión: ${usuario.username} (${usuario.rol})` : 'Sin sesión iniciada — la captura de resultados no funcionará'}
+          style={{
+            width: 14,
+            height: 14,
+            borderRadius: '50%',
+            border: 'none',
+            cursor: 'pointer',
+            background: estaAutenticado ? '#28a745' : '#dc3545',
+            boxShadow: '0 0 6px rgba(0,0,0,0.6)',
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            background: 'rgba(20,20,20,0.95)',
+            border: '1px solid var(--color-oro, #c9a227)',
+            borderRadius: '8px',
+            padding: '14px',
+            minWidth: '220px',
+            color: '#fff',
+          }}
+        >
+          {estaAutenticado ? (
+            <>
+              <p style={{ margin: '0 0 10px', fontSize: '0.9rem' }}>
+                Sesión activa: <strong>{usuario.username}</strong> ({usuario.rol})
+              </p>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button type="button" className="btn btn-secondary" onClick={handleLogout} style={{ flex: 1 }}>
+                  Cerrar sesión
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={() => setAbierto(false)} style={{ flex: 1 }}>
+                  Cerrar
+                </button>
+              </div>
+            </>
+          ) : (
+            <form onSubmit={handleLogin}>
+              <p style={{ margin: '0 0 8px', fontSize: '0.85rem', color: '#ffb347' }}>
+                Sin sesión — la captura con "z" no va a guardar.
+              </p>
+              <input
+                type="text"
+                placeholder="Usuario"
+                autoFocus
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                style={{ width: '100%', marginBottom: '8px', padding: '6px 8px', borderRadius: '4px', border: '1px solid #444', background: '#262626', color: '#fff' }}
+              />
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ width: '100%', marginBottom: '8px', padding: '6px 8px', borderRadius: '4px', border: '1px solid #444', background: '#262626', color: '#fff' }}
+              />
+              {error && <p style={{ color: '#e05555', fontSize: '0.8rem', margin: '0 0 8px' }}>{error}</p>}
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button type="submit" className="btn btn-primary" disabled={enviando} style={{ flex: 1 }}>
+                  {enviando ? '...' : 'Ingresar'}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={() => setAbierto(false)} style={{ flex: 1 }}>
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const TVPage = () => {
+  const { estaAutenticado } = useAuth();
+
   // --- ESTADOS ---
   const [plan, setPlan] = useState([]);
   const [config, setConfig] = useState({ id: null, numero_sorteo: '---', fecha: '---' });
@@ -51,6 +183,12 @@ const TVPage = () => {
   const saveResult = useCallback(async () => {
     if (!config.id || !currentPrize) return;
 
+    if (!estaAutenticado) {
+      console.warn('No hay sesión iniciada: abre el punto en la esquina inferior derecha para iniciar sesión.');
+      setSaveStatus('error');
+      return;
+    }
+
     // Concatenamos los valores visibles
     const rawResult = inputValues.slice(0, numInputs).join('');
 
@@ -79,7 +217,7 @@ const TVPage = () => {
       console.error("Error al guardar.", error);
       setSaveStatus('error');
     }
-  }, [config.id, currentPrize, inputValues, numInputs, numeroCifras]);
+  }, [config.id, currentPrize, inputValues, numInputs, numeroCifras, estaAutenticado]);
 
   // --- MANEJO DE TECLADO GLOBAL ---
   useEffect(() => {
@@ -203,6 +341,8 @@ const TVPage = () => {
 
   return (
     <div className="tv-container">
+      <SesionWidget />
+
       <header className="main-header">
         <div className="header-column">
           <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
