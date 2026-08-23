@@ -1,12 +1,18 @@
 // src/context/AuthContext.js
 //
 // Contexto global de autenticación. Envuelve <App /> con <AuthProvider>
-// (ya hecho en el App.js que te entrego). Expone: usuario, cargando,
-// login(), logout(), y tieneRol() para usar en componentes y rutas.
+// (ya hecho en App.js). Expone: usuario, cargando, login(), logout(), y
+// tieneRol() para usar en componentes y rutas.
+//
+// La sesión se guarda como un JWT en localStorage (clave TOKEN_KEY,
+// definida en axiosGlobalConfig.js) y se reenvía en cada petición vía
+// header Authorization — NO se usa cookie (ver axiosGlobalConfig.js para
+// el porqué).
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import API_URL from '../config';
+import { TOKEN_KEY } from '../api/axiosGlobalConfig';
 
 const AuthContext = createContext(null);
 
@@ -15,10 +21,18 @@ export function AuthProvider({ children }) {
   const [cargando, setCargando] = useState(true);
 
   const cargarUsuarioActual = useCallback(async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) {
+      setUsuario(null);
+      setCargando(false);
+      return;
+    }
     try {
       const { data } = await axios.get(`${API_URL}/auth/me`);
       setUsuario(data);
     } catch {
+      // Token vencido/ inválido: lo limpiamos para no seguir intentando
+      localStorage.removeItem(TOKEN_KEY);
       setUsuario(null);
     } finally {
       setCargando(false);
@@ -33,6 +47,7 @@ export function AuthProvider({ children }) {
     // Puede lanzar error (401): captúralo en el componente de login
     // para mostrar "usuario o contraseña incorrectos".
     const { data } = await axios.post(`${API_URL}/auth/login`, { username, password });
+    localStorage.setItem(TOKEN_KEY, data.access_token);
     setUsuario(data);
     return data;
   };
@@ -41,6 +56,7 @@ export function AuthProvider({ children }) {
     try {
       await axios.post(`${API_URL}/auth/logout`);
     } finally {
+      localStorage.removeItem(TOKEN_KEY);
       setUsuario(null);
     }
   };

@@ -1,24 +1,33 @@
 // src/api/axiosGlobalConfig.js
 //
-// Tu proyecto usa `import axios from 'axios'` directo en cada página
-// (ManagePlan.js, TVPage.js, etc.), no una instancia compartida. Para no
-// tener que tocar el import de cada archivo, configuramos axios.defaults
-// UNA sola vez, aquí, y este archivo se importa una sola vez en index.js
-// antes de <App />. A partir de eso, TODAS las llamadas de axios en toda
-// la app (sin importar en qué archivo estén) envían/reciben la cookie.
+// Adjunta automáticamente el header "Authorization: Bearer <token>" a
+// TODAS las llamadas de axios de la app (sin importar en qué archivo
+// estén — ManagePlan.js, TVPage.js, etc. — porque este interceptor se
+// registra sobre la instancia global de axios). Se importa UNA sola vez
+// en index.js, antes de <App />.
 //
-// withCredentials: true es obligatorio para que el navegador envíe y
-// acepte la cookie httpOnly de sesión (mzl_access_token) en peticiones
-// cross-site (frontend en Vercel, backend en Render).
+// Por qué header y no cookie: el frontend (Vercel) y el backend (Render)
+// son dominios raíz distintos. Sin un dominio propio que los una, los
+// navegadores modernos bloquean por defecto las cookies "de terceros"
+// entre sitios así — incluso con SameSite=None; Secure bien configurado.
+// Un header explícito no tiene ese problema.
 
 import axios from 'axios';
 
-axios.defaults.withCredentials = true;
+export const TOKEN_KEY = 'mzl_token';
 
-// Nota: NO agregamos aquí un interceptor global que redirija a /login en
-// cualquier 401, a propósito. TVPage.js ("/") es la pantalla pública de
-// TV y también captura resultados en vivo con axios.post — si esa llamada
-// devuelve 401 (porque el operador no inició sesión en ese navegador), no
-// queremos redirigir la transmisión en vivo a una pantalla de login. Cada
-// página ya maneja sus propios errores de red en su catch(). La
-// protección real de acceso a /admin/* vive en <RutaProtegida />.
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Nota: NO agregamos aquí un interceptor de RESPUESTA que redirija a
+// /login en cualquier 401, a propósito. TVPage.js ("/") es la pantalla
+// pública de TV y también captura resultados en vivo — si esa llamada
+// devuelve 401 (operador sin sesión), no queremos redirigir la
+// transmisión en vivo a una pantalla de login. Cada página ya maneja sus
+// propios errores de red en su catch(). La protección real de acceso a
+// /admin/* vive en <RutaProtegida />.
